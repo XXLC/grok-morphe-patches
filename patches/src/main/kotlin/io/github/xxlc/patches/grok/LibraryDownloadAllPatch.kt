@@ -1,7 +1,7 @@
 package io.github.xxlc.patches.grok
 
 import app.morphe.patcher.extensions.InstructionExtensions.addInstruction
-import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLabels
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.util.addInstructionsAtControlFlowLabel
 import app.morphe.patcher.util.smali.ExternalLabel
@@ -35,7 +35,7 @@ val libraryDownloadAllPatch = bytecodePatch(
             )
             // 0x1d đã có nơi sử dụng; bắt riêng 0x7f trước packed-switch gốc.
             // Đường đi thông thường khởi tạo lại v0, v1 trong phần mã gốc.
-            addInstructions(
+            addInstructionsWithLabels(
                 0,
                 """
                     iget-byte v0, p0, Ldb/q1;->a:B
@@ -59,7 +59,7 @@ val libraryDownloadAllPatch = bytecodePatch(
             val buttonIndex = LibraryButtonsFingerprint.instructionMatches.last().index
             requireRegisters(buttonIndex, 14, 15, 16, 17, 18, 19, 20)
             // Chèn sau lời gọi vẽ Download gốc, giữ cùng bố cục và trạng thái bật/tắt.
-            addInstructions(
+            addInstructionsWithLabels(
                 buttonIndex + 1,
                 """
                     sget-object v19, Lcg/q;->g0:Lzf0/b;

@@ -90,6 +90,13 @@ patches also check selected return and branch instructions. These checks reject
 some incompatible bytecode layouts; compilation alone does not exercise them
 against an APK or prove runtime behavior.
 
+Injected smali with internal labels must use `addInstructionsWithLabels`, or
+`addInstructionsAtControlFlowLabel` when existing branch-target labels must be
+preserved at the insertion point. Plain `addInstructions` only handles internal
+labels correctly at index 0. Morphe Patcher does not verify DEX by default during
+patching, so label errors may only surface on a device. After generating a new
+APK, inspect the branch targets in every modified method.
+
 ## Build and validation
 
 Use GitHub Actions for builds; do not run Gradle locally for this repository's

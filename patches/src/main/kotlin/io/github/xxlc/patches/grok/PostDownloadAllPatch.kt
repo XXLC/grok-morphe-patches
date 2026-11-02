@@ -1,6 +1,6 @@
 package io.github.xxlc.patches.grok
 
-import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLabels
 import app.morphe.patcher.patch.bytecodePatch
 import app.morphe.patcher.util.proxy.mutableTypes.MutableField.Companion.toMutable
 import com.android.tools.smali.dexlib2.AccessFlags
@@ -27,7 +27,7 @@ val postDownloadAllPatch = bytecodePatch(
             requireRegisterCount(5)
             // Chỉ trả về false nếu hai hành động Download khác cờ b.
             // Phần gốc tự khởi tạo lại v0, v1, v2; hashCode có thể giữ nguyên.
-            addInstructions(
+            addInstructionsWithLabels(
                 0,
                 """
                     instance-of v0, p1, Le7/s0;
@@ -54,7 +54,7 @@ val postDownloadAllPatch = bytecodePatch(
             requireRegisters(returnIndex, 0)
             // Cuối method chỉ còn v0 (danh sách) và v10 (cờ của Le7/n2) cần giữ.
             // Tạo bản sao rồi chèn ngay sau Download; nếu thiếu thì thêm cuối.
-            addInstructions(
+            addInstructionsWithLabels(
                 returnIndex,
                 """
                     new-instance v1, Ljava/util/ArrayList;
@@ -92,7 +92,7 @@ val postDownloadAllPatch = bytecodePatch(
             val labelIndex = PostMenuLabelFingerprint.instructionMatches.single().index
             requireRegisters(labelIndex, 4)
             // Hằng số gốc đã được fingerprint tra bằng tên tài nguyên.
-            addInstructions(
+            addInstructionsWithLabels(
                 labelIndex + 1,
                 """
                     move-object v0, p0
@@ -112,7 +112,7 @@ val postDownloadAllPatch = bytecodePatch(
             requireRegisters(sendIndex, 0)
             // Giữ nguyên thanh ghi và coroutine 0x1b của bản vá thủ công.
             // Media hiện tại vẫn đi qua nhánh gốc sau khi gửi các media còn lại.
-            addInstructions(
+            addInstructionsWithLabels(
                 sendIndex,
                 """
                     move-object v4, v0
