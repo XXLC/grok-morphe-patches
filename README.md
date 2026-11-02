@@ -6,8 +6,8 @@ Supports only `ai.x.grok` **1.2.53-release.00**, versionCode **11253200**,
 APKMirror **`.apkm`** input.
 
 In Morphe Manager, add `https://github.com/XXLC/grok-morphe-patches` as a patch
-source, or use [Add to Morphe Manager](https://morphe.software/add-source?github=XXLC/grok-morphe-patches).
-The source requires a published release before Manager can download its bundle.
+source for stable releases, or use [Add to Morphe Manager](https://morphe.software/add-source?github=XXLC/grok-morphe-patches).
+For prereleases, add `https://github.com/XXLC/grok-morphe-patches/tree/dev` instead.
 
 | Patch | Behavior | Default |
 | --- | --- | --- |
@@ -18,8 +18,21 @@ The source requires a published release before Manager can download its bundle.
 The original Download actions remain available. The two download patches share
 an internal resource patch with English and Vietnamese labels.
 
-The behavior was verified through manual smali patches on this exact app version,
-reported working on a phone. This Morphe implementation has been statically reviewed;
-it has **not been built, applied, or tested on a device** until a release says otherwise.
+## Verification and known limitations
+
+- Verified on a physical Android device: `ai.x.grok` 1.2.53-release.00 patched and
+  installed with Morphe Manager, using a cloned app.
+- Signing in with X does not work in the patched app. Use another sign-in method.
+
+## Disclaimer
+
+- Not affiliated with, endorsed by, or sponsored by xAI or the Morphe project.
+  "Grok" is a trademark of its owner.
+- Provided "as is", without warranty of any kind. Use at your own risk.
+- This repository contains only patch source code. It does not contain or distribute
+  APKs or any xAI or Google assets.
+- The Pairip license check bypass is intended only for personal compatibility with a
+  lawfully obtained copy of the app. Modifying the app may violate its terms of
+  service; you are responsible for how you use these patches.
 
 Licensed under [GPLv3](LICENSE), subject to the retained [NOTICE](NOTICE).
