@@ -4,16 +4,18 @@ import app.morphe.patcher.patch.resourcePatch
 import app.morphe.patcher.resource.PublicXmlManager
 import org.w3c.dom.Element
 
-internal const val DOWNLOAD_ALL_STRING = "grok_imagine_post_download_all"
-internal var downloadAllStringId: Int = 0
-    private set
+private val stringIds = mutableMapOf<String, Int>()
+
+// Chỉ đọc sau khi dependency tài nguyên đã chạy; không trả về ID 0 giả hợp lệ.
+internal fun stringId(name: String): Int = stringIds.getValue(name)
 
 // Không có tên để patch dùng chung không xuất hiện trong danh sách của Manager.
 internal val downloadResourcesPatch = resourcePatch {
     compatibleWith(grokCompatibility)
 
     execute {
-        mapOf("values" to "Download all", "values-vi" to "Tải tất cả").forEach { (directory, text) ->
+        stringIds.clear()
+        listOf("values", "values-vi").forEach { directory ->
             val path = "res/$directory/strings.xml"
             val file = get(path)
             if (!file.exists()) {
@@ -23,20 +25,25 @@ internal val downloadResourcesPatch = resourcePatch {
             document(path).use { document ->
                 val strings = document.getElementsByTagName("string")
                 val existing = (0 until strings.length).map { strings.item(it) as Element }
-                    .singleOrNull { it.getAttribute("name") == DOWNLOAD_ALL_STRING }
-                val element = existing ?: document.createElement("string").also {
-                    it.setAttribute("name", DOWNLOAD_ALL_STRING)
-                    document.documentElement.appendChild(it)
+                xxlcStrings.forEach { string ->
+                    val element = existing.singleOrNull { it.getAttribute("name") == string.name }
+                        ?: document.createElement("string").also {
+                            it.setAttribute("name", string.name)
+                            document.documentElement.appendChild(it)
+                        }
+                    // DOM giữ nguyên %1$d; dấu $ chỉ cần escape trong mã Kotlin.
+                    element.textContent = if (directory == "values-vi") string.vi else string.en
                 }
-                element.textContent = text
             }
         }
 
         // resourceId() chỉ thấy tài nguyên đầu vào. Cấp ID mới trong public.xml
         // để cả bytecode và bước biên dịch tài nguyên dùng cùng một ID.
         PublicXmlManager(get("res/values/public.xml")).use { publicIds ->
-            publicIds.createPublicId("string", DOWNLOAD_ALL_STRING)
-            downloadAllStringId = publicIds.getDefinedIds().getValue("string" to DOWNLOAD_ALL_STRING)
+            xxlcStrings.forEach { string ->
+                publicIds.createPublicId("string", string.name)
+                stringIds[string.name] = publicIds.getDefinedIds().getValue("string" to string.name)
+            }
         }
     }
 }
