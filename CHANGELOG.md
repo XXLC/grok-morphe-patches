@@ -1,3 +1,9 @@
+## [1.1.0-dev.2](https://github.com/XXLC/grok-morphe-patches/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2026-11-19)
+
+### ✨ New Features
+
+* support Grok 1.2.57 and fix issues found in device testing ([8db4cb0](https://github.com/XXLC/grok-morphe-patches/commit/8db4cb088c5e731c45f7963df4e93b57ca24c2d7))
+
 ## [1.1.0-dev.1](https://github.com/XXLC/grok-morphe-patches/compare/v1.0.1...v1.1.0-dev.1) (2026-11-15)
 
 ### ✨ New Features
