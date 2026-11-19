@@ -15,7 +15,6 @@ internal val postActionFlagsPatch = bytecodePatch {
         listOf(
             GrokNames.DOWNLOAD_ALL_FLAG_NAME,
             GrokNames.COPY_PROMPT_FLAG_NAME,
-            GrokNames.SHARE_FILE_FLAG_NAME,
         ).forEach { name ->
             check(actionClass.fields.none { it.name == name }) {
                 "Trường cờ hành động đã tồn tại: $name"
@@ -44,9 +43,6 @@ internal val postActionFlagsPatch = bytecodePatch {
                     if-ne v1, v2, :d2_flags_different
                     iget-boolean v1, p0, ${GrokNames.COPY_PROMPT_FLAG}
                     iget-boolean v2, v0, ${GrokNames.COPY_PROMPT_FLAG}
-                    if-ne v1, v2, :d2_flags_different
-                    iget-boolean v1, p0, ${GrokNames.SHARE_FILE_FLAG}
-                    iget-boolean v2, v0, ${GrokNames.SHARE_FILE_FLAG}
                     if-eq v1, v2, :d2_flags_original_equals
                     :d2_flags_different
                     const/4 v0, 0x0

@@ -9,7 +9,6 @@ internal val xxlcStrings = listOf(
     XxlcString(DOWNLOAD_ALL_STRING, "Download all", "Tải tất cả"),
     XxlcString("grok_xxlc_copy_prompt", "Copy prompt", "Sao chép prompt"),
     XxlcString("grok_xxlc_copy_seed", "Copy seed", "Sao chép seed"),
-    XxlcString("grok_xxlc_share_file", "Share file", "Chia sẻ tệp"),
     XxlcString("grok_xxlc_select_all", "Select all", "Chọn tất cả"),
     XxlcString(
         "grok_xxlc_download_queued",

@@ -7,7 +7,7 @@ import com.android.tools.smali.dexlib2.Opcode
 @Suppress("unused")
 val copyPromptPatch = bytecodePatch(
     name = "Copy prompt",
-    description = "Thêm mục sao chép prompt media hiện tại vào clipboard; ẩn khi prompt rỗng. Model 1.2.56 không có seed nên không sao chép seed. Chưa kiểm trên thiết bị.",
+    description = "Thêm mục sao chép prompt media hiện tại vào clipboard bằng icon sao chép; chỉ hiện khi media đã tạo xong (không che mục Thử lại khi tạo lỗi) và prompt không rỗng. Model 1.2.57 không có seed nên không sao chép seed. Chưa kiểm trên thiết bị.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)
@@ -17,10 +17,8 @@ val copyPromptPatch = bytecodePatch(
 
     execute {
         if (enabled != true) return@execute
-        postMenuForExtraAction().method.appendExtraPostAction(GrokNames.COPY_PROMPT_FLAG, "copy", true)
-        postLabelForExtraAction().method.labelExtraPostAction(
-            GrokNames.COPY_PROMPT_FLAG, "copy", stringId("grok_xxlc_copy_prompt"),
-        )
+        postMenuForExtraAction().method.appendCopyPromptAction()
+        postLabelForExtraAction().method.labelCopyPromptAction(stringId("grok_xxlc_copy_prompt"))
         postHandlerForExtraAction().method.apply {
             requireRegisterCount(22)
             val mediaIndex = indexOfReference(Opcode.INVOKE_VIRTUAL, GrokNames.FIND_CURRENT_MEDIA)

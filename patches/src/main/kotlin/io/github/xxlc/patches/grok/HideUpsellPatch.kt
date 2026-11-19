@@ -62,11 +62,11 @@ val hideUpgradePromptsPatch = bytecodePatch(
         if (enabled != true) return@execute
 
         ImagineLimitBannerFingerprint.method.apply {
-            requireRegisterCount(50)
+            requireRegisterCount(56)
             val bannerIndex = indexOfReference(Opcode.IGET_OBJECT, GrokNames.IMAGINE_LIMIT_BANNER)
-            requireRegisters(bannerIndex, 10, 6)
-            // v10 chỉ chứa targetState; lambda Lya/j trả Unit khi state null.
-            // Chèn ngay sau phép đọc, giữ mọi nhãn và dữ liệu trong v6.
+            requireRegisters(bannerIndex, 10, 13)
+            // v10 chỉ chứa targetState; lambda trả Unit khi state null.
+            // Chèn ngay sau phép đọc, giữ mọi nhãn và dữ liệu trong v13.
             addInstruction(bannerIndex + 1, "const/4 v10, 0x0")
         }
         SettingsUpsellTitleFingerprint.method.requireRegisterCount(16)

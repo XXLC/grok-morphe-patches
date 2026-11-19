@@ -10,6 +10,8 @@ import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 import com.android.tools.smali.dexlib2.iface.reference.StringReference
 
 private const val NAME_HELPER = "Lio/github/xxlc/extension/grok/DownloadNameHelper;"
+private const val FOLDER_HELPER = "Lio/github/xxlc/extension/grok/DownloadFolderHelper;"
+private const val DOWNLOAD_MANAGER_REQUEST = "Landroid/app/DownloadManager\$Request;"
 private const val GUESS_FILE_NAME = "Landroid/webkit/URLUtil;->guessFileName(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
 
 private fun MutableMethod.replaceNameString(original: String, replacement: String, register: Int) {
@@ -98,39 +100,71 @@ val downloadFileNamesPatch = bytecodePatch(
     }
 }
 
-private fun MutableMethod.replaceFolder(field: String, folder: String, register: Int, expected: Int = 1) {
-    val indices = implementation!!.instructions.withIndex().filter { (_, instruction) ->
-        instruction.opcode == Opcode.SGET_OBJECT &&
-            (instruction as? ReferenceInstruction)?.reference?.toString() ==
-            "Landroid/os/Environment;->$field:Ljava/lang/String;"
-    }.map { it.index }
-    check(indices.size == expected) { "Số điểm chọn thư mục $field không khớp: ${indices.size}" }
-    indices.forEach { index ->
-        requireRegisters(index, register)
-        replaceInstruction(index, "const-string v$register, \"$folder/Grok\"")
-    }
+private fun MutableMethod.replaceSingleReference(opcode: Opcode, original: String, replacement: String, register: Int) {
+    val index = indexOfReference(opcode, original)
+    requireRegisters(index, register)
+    replaceInstruction(index, replacement)
 }
 
 @Suppress("unused")
 val downloadFoldersPatch = bytecodePatch(
     name = "Download folders",
-    description = "Lưu vào Download/Grok, Pictures/Grok hoặc Movies/Grok theo luồng gốc. Trước Android 10, các nhánh cũ tiếp tục dùng Download/Grok. Bao gồm tệp thường qua bộ lưu dùng chung. Chưa kiểm trên thiết bị.",
+    description = "Lưu mọi tệp tải về vào Download/Grok/Pictures (ảnh), Download/Grok/Videos (video) hoặc Download/Grok (loại khác) qua MediaStore Downloads (hoặc Download/Grok/... trên Android < 10). Chưa kiểm trên thiết bị.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)
+    extendWith("extensions/extension.mpe")
     val enabled by enabledOption(default = true)
 
     execute {
         if (enabled != true) return@execute
         Fingerprint(
             definingClass = GrokNames.PUBLIC_VIDEO_FILES,
-            name = GrokNames.PUBLIC_VIDEO_SAVE_METHOD,
+            name = GrokNames.PUBLIC_MEDIA_SAVE_METHOD,
             isStatic = true,
             returnType = "Ljava/lang/Object;",
-            parameters = listOf("Landroid/content/Context;", "Ljava/lang/String;", "Ljava/io/File;"),
+            parameters = listOf("Landroid/content/Context;", "Ljava/io/InputStream;", "Ljava/lang/String;", "Ljava/lang/String;", "Ljava/lang/String;"),
         ).method.apply {
-            requireRegisterCount(6)
-            replaceFolder("DIRECTORY_DOWNLOADS", "Download", 0)
+            requireRegisterCount(10)
+            val insertIndex = indexOfReference(Opcode.CONST_STRING, "/")
+            requireRegisters(insertIndex, 0)
+            addInstructions(
+                insertIndex,
+                """
+                    invoke-static {p2, p3}, $FOLDER_HELPER->resolveFolder(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+                    move-result-object p4
+                """,
+            )
+        }
+        Fingerprint(
+            definingClass = GrokNames.MEDIA_DOWNLOADER,
+            name = GrokNames.DOWNLOAD_MANAGER_REQUEST_METHOD,
+            isStatic = false,
+            returnType = "Landroid/app/DownloadManager\$Request;",
+            parameters = listOf("Landroid/net/Uri;", "Ljava/lang/String;", "Ljava/lang/String;", "Z"),
+        ).method.apply {
+            requireRegisterCount(7)
+            val destIndex = indexOfReference(
+                Opcode.INVOKE_VIRTUAL,
+                "Landroid/app/DownloadManager\$Request;->setDestinationInExternalPublicDir(Ljava/lang/String;Ljava/lang/String;)Landroid/app/DownloadManager\$Request;",
+            )
+            requireRegisters(destIndex, 0, 1, 4)
+            val titleIndex = indexOfReference(
+                Opcode.INVOKE_VIRTUAL,
+                "Landroid/app/DownloadManager\$Request;->setTitle(Ljava/lang/CharSequence;)Landroid/app/DownloadManager\$Request;",
+            )
+            requireRegisters(titleIndex, 0, 4)
+            requireRegisters(titleIndex + 1, 4)
+            replaceInstruction(titleIndex + 1, "move-object p2, v0")
+            replaceInstruction(titleIndex, "nop")
+            addInstructions(
+                destIndex - 1,
+                """
+                    invoke-virtual {v0, p2}, $DOWNLOAD_MANAGER_REQUEST->setTitle(Ljava/lang/CharSequence;)$DOWNLOAD_MANAGER_REQUEST
+                    invoke-static {p3, p2}, $FOLDER_HELPER->resolveDownloadManagerSubPath(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+                    move-result-object p2
+                """,
+            )
         }
         Fingerprint(
             definingClass = GrokNames.MEDIA_SAVE_TASK,
@@ -140,9 +174,30 @@ val downloadFoldersPatch = bytecodePatch(
             parameters = listOf("Ljava/lang/Object;"),
         ).method.apply {
             requireRegisterCount(15)
-            replaceFolder("DIRECTORY_MOVIES", "Movies", 14)
-            replaceFolder("DIRECTORY_PICTURES", "Pictures", 14)
-            replaceFolder("DIRECTORY_DOWNLOADS", "Download", 14, expected = 3)
+            replaceSingleReference(
+                Opcode.SGET_OBJECT,
+                "Landroid/provider/MediaStore\$Video\$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;",
+                "sget-object v0, Landroid/provider/MediaStore\$Downloads;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;",
+                0,
+            )
+            replaceSingleReference(
+                Opcode.SGET_OBJECT,
+                "Landroid/os/Environment;->DIRECTORY_MOVIES:Ljava/lang/String;",
+                "const-string v14, \"Download/Grok/Videos\"",
+                14,
+            )
+            replaceSingleReference(
+                Opcode.SGET_OBJECT,
+                "Landroid/provider/MediaStore\$Images\$Media;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;",
+                "sget-object v0, Landroid/provider/MediaStore\$Downloads;->EXTERNAL_CONTENT_URI:Landroid/net/Uri;",
+                0,
+            )
+            replaceSingleReference(
+                Opcode.SGET_OBJECT,
+                "Landroid/os/Environment;->DIRECTORY_PICTURES:Ljava/lang/String;",
+                "const-string v14, \"Download/Grok/Pictures\"",
+                14,
+            )
         }
         mediaFileMethod(
             GrokNames.GENERIC_MEDIA_SAVE_METHOD,
@@ -150,7 +205,17 @@ val downloadFoldersPatch = bytecodePatch(
             false, "V",
         ).method.apply {
             requireRegisterCount(9)
-            replaceFolder("DIRECTORY_DOWNLOADS", "Download", 0)
+            val dirIndex = indexOfReference(Opcode.SGET_OBJECT, "Landroid/os/Environment;->DIRECTORY_DOWNLOADS:Ljava/lang/String;")
+            requireRegisters(dirIndex, 0)
+            requireRegisters(dirIndex - 1, 8)
+            replaceInstruction(dirIndex, "nop")
+            addInstructions(
+                dirIndex - 1,
+                """
+                    invoke-static {p3, p2}, $FOLDER_HELPER->resolveFolder(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+                    move-result-object v0
+                """,
+            )
         }
         mediaFileMethod(
             GrokNames.LEGACY_MEDIA_SAVE_METHOD,
@@ -161,6 +226,18 @@ val downloadFoldersPatch = bytecodePatch(
             val mkdirIndex = indexOfReference(Opcode.INVOKE_VIRTUAL, "Ljava/io/File;->mkdir()Z")
             requireRegisters(mkdirIndex, 6)
             replaceInstruction(mkdirIndex, "invoke-virtual {p4}, Ljava/io/File;->mkdirs()Z")
+            val pubDirIndex = indexOfReference(
+                Opcode.INVOKE_STATIC,
+                "Landroid/os/Environment;->getExternalStoragePublicDirectory(Ljava/lang/String;)Ljava/io/File;",
+            )
+            requireRegisters(pubDirIndex, 6)
+            addInstructions(
+                pubDirIndex,
+                """
+                    invoke-static {p2, p1}, $FOLDER_HELPER->resolveFolder(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+                    move-result-object p4
+                """,
+            )
         }
     }
 }
