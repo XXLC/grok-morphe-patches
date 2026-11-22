@@ -17,7 +17,7 @@ private object VideoDownloadUrlFingerprint : Fingerprint(
 @Suppress("unused")
 val bestVideoQualityPatch = bytecodePatch(
     name = "Download best video quality",
-    description = "Chọn URL video chất lượng cao nhất ứng dụng đã nhận, giữ caption và nhạc; quay về URL gốc nếu thiếu. Ảnh chỉ có một URL nên không đổi. Chưa kiểm trên thiết bị.",
+    description = "Select the highest-quality video URL the app already received, keeping captions and music overlays and falling back to the original URL when needed. Images have a single URL and are unchanged. Not tested on a device.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)

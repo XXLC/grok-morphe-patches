@@ -15,7 +15,7 @@ private object ImagineTabHiddenFingerprint : Fingerprint(
 @Suppress("unused")
 val showImagineTabPatch = bytecodePatch(
     name = "Show Imagine tab",
-    description = "Luôn hiện tab Imagine ở màn hình chính, kể cả khi cờ home layout v2 ẩn nó theo tuổi tài khoản hoặc thời gian không dùng Imagine. Không đổi khoá Imagine của Team/Org do quản trị viên đặt. Chưa kiểm trên thiết bị.",
+    description = "Always show the Imagine tab on the home screen, even when the home layout v2 flag hides it for new accounts or accounts that have not used Imagine recently. Does not change the Team/Org Imagine lock. Not tested on a device.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)

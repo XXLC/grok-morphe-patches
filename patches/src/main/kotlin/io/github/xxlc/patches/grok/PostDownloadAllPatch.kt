@@ -8,7 +8,7 @@ import com.android.tools.smali.dexlib2.iface.instruction.NarrowLiteralInstructio
 @Suppress("unused")
 val postDownloadAllPatch = bytecodePatch(
     name = "Download all (post)",
-    description = "Thêm mục tải tất cả media của bài Imagine đang xem, giữ nguyên mục Download.",
+    description = "Add a menu item that downloads all media of the Imagine post being viewed, keeping the original Download item.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)
@@ -27,7 +27,7 @@ val postDownloadAllPatch = bytecodePatch(
             }
             requireRegisters(returnIndex, 0)
             // Cuối method chỉ còn v0 (danh sách) và v10 (cờ của Ly7/m2) cần giữ.
-            // Tạo bản sao rồi chèn ngay sau Download; nếu thiếu thì thêm cuối.
+            // Tạo bản sao rồi chèn ngay sau Download; nếu thiếu (đang tạo, lỗi, bị kiểm duyệt) thì không thêm.
             addInstructionsWithLabels(
                 returnIndex,
                 """
@@ -46,7 +46,7 @@ val postDownloadAllPatch = bytecodePatch(
                     :find_download
                     invoke-interface {v5}, Ljava/util/Iterator;->hasNext()Z
                     move-result v7
-                    if-eqz v7, :insert_download_all
+                    if-eqz v7, :skip_download_all
                     invoke-interface {v5}, Ljava/util/Iterator;->next()Ljava/lang/Object;
                     move-result-object v7
                     check-cast v7, ${GrokNames.MENU_ITEM}
@@ -57,6 +57,8 @@ val postDownloadAllPatch = bytecodePatch(
                     :insert_download_all
                     invoke-virtual {v1, v6, v4}, Ljava/util/ArrayList;->add(ILjava/lang/Object;)V
                     move-object v0, v1
+                    :skip_download_all
+                    nop
                 """,
             )
         }
@@ -80,6 +82,7 @@ val postDownloadAllPatch = bytecodePatch(
                     iget-boolean v0, v0, ${GrokNames.DOWNLOAD_ALL_FLAG}
                     if-eqz v0, :original_label
                     const v4, $downloadAllStringId
+                    sget-object v8, ${GrokNames.DOWNLOAD_ALL_ICON}
                     :original_label
                     nop
                 """,

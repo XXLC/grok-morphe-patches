@@ -8,7 +8,7 @@ import com.android.tools.smali.dexlib2.Opcode
 @Suppress("unused")
 val keepScreenOnPatch = bytecodePatch(
     name = "Keep screen on",
-    description = "Giữ màn hình sáng trong toàn bộ thời gian Grok ở tiền cảnh, kể cả đọc chat. Tắt cờ khi Activity tạm dừng. Tốn pin nên mặc định tắt; chưa kiểm trên thiết bị.",
+    description = "Keep the screen on for as long as Grok is in the foreground, including while reading chat. The flag is cleared when the activity pauses. Uses more battery, so it is off by default; not tested on a device.",
     default = false,
 ) {
     compatibleWith(grokCompatibility)

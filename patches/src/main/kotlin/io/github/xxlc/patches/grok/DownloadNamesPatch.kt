@@ -35,7 +35,7 @@ private fun mediaFileMethod(name: String, parameters: List<String>, isStatic: Bo
 @Suppress("unused")
 val downloadFileNamesPatch = bytecodePatch(
     name = "Download file names",
-    description = "Đặt tên tải ảnh/video theo Grok_yyyyMMdd_HHmmss, thêm mili giây và số thứ tự để tránh trùng trong cùng tiến trình. Giữ phần mở rộng và cơ chế chống trùng sẵn có. Chưa kiểm trên thiết bị.",
+    description = "Name downloaded images and videos Grok_yyyyMMdd_HHmmss with milliseconds and a sequence number to avoid collisions within a process. Keeps file extensions and the existing deduplication. Not tested on a device.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)
@@ -77,6 +77,25 @@ val downloadFileNamesPatch = bytecodePatch(
                 """,
             )
         }
+        // Luồng lưu chung (thư viện, GrokBot): đổi tên trước khi tên bị làm sạch, giữ phần mở rộng.
+        Fingerprint(
+            definingClass = GrokNames.PUBLIC_VIDEO_FILES,
+            name = GrokNames.PUBLIC_MEDIA_SAVE_METHOD,
+            isStatic = true,
+            returnType = "Ljava/lang/Object;",
+            parameters = listOf("Landroid/content/Context;", "Ljava/io/InputStream;", "Ljava/lang/String;", "Ljava/lang/String;", "Ljava/lang/String;"),
+        ).method.apply {
+            requireRegisterCount(9)
+            val insertIndex = indexOfReference(Opcode.CONST_STRING, "/")
+            requireRegisters(insertIndex, 0)
+            addInstructions(
+                insertIndex,
+                """
+                    invoke-static {p3, p2}, $NAME_HELPER->renameMedia(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+                    move-result-object p3
+                """,
+            )
+        }
         listOf(
             Triple(GrokNames.MEDIA_NAME_METHOD, listOf("Ljava/lang/String;", "Landroid/net/Uri;", "Ljava/lang/String;", "Landroid/content/Context;"), 16),
             Triple(GrokNames.LEGACY_MEDIA_NAME_METHOD, listOf("Ljava/lang/String;", "Ljava/io/File;", "Ljava/lang/String;"), 9),
@@ -109,7 +128,7 @@ private fun MutableMethod.replaceSingleReference(opcode: Opcode, original: Strin
 @Suppress("unused")
 val downloadFoldersPatch = bytecodePatch(
     name = "Download folders",
-    description = "Lưu mọi tệp tải về vào Download/Grok/Pictures (ảnh), Download/Grok/Videos (video) hoặc Download/Grok (loại khác) qua MediaStore Downloads (hoặc Download/Grok/... trên Android < 10). Chưa kiểm trên thiết bị.",
+    description = "Save every download to Download/Grok/Pictures (images), Download/Grok/Videos (videos) or Download/Grok (other files) through MediaStore Downloads (or Download/Grok/... before Android 10). Not tested on a device.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)

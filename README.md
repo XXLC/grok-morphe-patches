@@ -19,19 +19,20 @@ Select the supported app file and apply the patches.
 | Patch | Behavior | Selected by default |
 | --- | --- | --- |
 | Bypass license check | Skip the Pairip license check. | Enabled |
-| Download all (post) | Add a separate menu item to download all media in the current Imagine post. | Enabled |
-| Download all (library) | Add a separate button to download all media in the selected Imagine posts. | Enabled |
+| Download all (post) | Add a separate menu item, with an image-collection icon instead of the save icon, to download all media in the current Imagine post. | Enabled |
+| Download all (library) | Add a separate button, with an image-collection icon instead of the save icon, to download all media in the selected Imagine posts. | Enabled |
 | Download best video quality | Select the best video URL already supplied by the server, preserving caption/music overlays and falling back to the original URL when needed. Images are unchanged. Not tested on a device. | Enabled |
 | Download file names | Use `Grok_yyyyMMdd_HHmmss_SSS_sequence` names for downloaded images/videos, preserving extensions and existing deduplication. Not tested on a device. | Enabled |
 | Download folders | Save every download, from inside a post and from the library, to `Download/Grok/Pictures` (images), `Download/Grok/Videos` (videos) or `Download/Grok` (other files), using the MediaStore Downloads collection (or the public Download directory before Android 10). Without this patch, library downloads land in the root `Download` folder. Includes the media viewer, GrokBot image saves and DownloadManager saves. Not tested on a device. | Enabled |
-| Copy prompt | Add a post menu item with the app's copy icon that copies the current media prompt; it is shown only for finished media (not while generation is loading or failed, so Retry stays visible) and hidden when the prompt is empty. No seed field was found in the 1.2.59 model. Not tested on a device. | Enabled |
+| Copy prompt | Add a post menu item with the app's copy icon that copies the current media prompt; it is shown only for finished, non-moderated media (not while generation is loading, failed or moderated, so Retry stays visible) and hidden when the prompt is empty. No seed field was found in the 1.2.59 model. Not tested on a device. | Enabled |
+| Ignore Team/Org Imagine lock | Make the app treat Imagine as allowed when a Team/Org setting disables it. App UI only: the server may still refuse Imagine requests, and the setting overridden was chosen by an organization admin. Use only on accounts you control. Not tested on a device. | Disabled |
 | Show Imagine tab | Always show the Imagine tab on the home screen, even when the remote home-layout flag hides it for new accounts or accounts that have not used Imagine recently. Team/Org admin locks are not overridden. Not tested on a device. | Enabled |
 | Keep screen on | Prevent automatic screen timeout while Grok's main Activity is resumed, including chat. Uses more battery. Not tested on a device. | Disabled |
 | Disable telemetry | Stop internal analytics events, Mixpanel tracking and Hightouch payload submission; force Crashlytics collection off. Not tested on a device. | Enabled |
 | Hide upgrade prompts | Hide the Imagine limit banner and Settings upsell card, preserving usage data and subscription management. Not tested on a device. | Disabled |
 | Skip delete confirmation | Immediately confirm deletion of a single Imagine image/video and of several library items selected together, without showing the confirmation dialog. Deleting an entire Imagine conversation still asks. Deletion is permanent on the server, with no Undo. Not tested on a device. | Disabled |
 
-The original Download actions remain available. Download all and Copy prompt use
+Patch names and descriptions are written in English; Morphe Manager can translate them into its app language. The original Download actions remain available. Download all and Copy prompt use
 shared internal infrastructure. Selecting a patch applies it:
 all `enabled` options default to true, including patches not selected by default.
 Set `enabled` to false to skip a patch's edits while keeping it selected. Shared

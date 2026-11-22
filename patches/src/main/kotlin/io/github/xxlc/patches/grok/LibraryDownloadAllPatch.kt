@@ -16,7 +16,7 @@ private const val LIBRARY_CONTEXT = "Le9/h;->l:Landroid/content/Context;"
 @Suppress("unused")
 val libraryDownloadAllPatch = bytecodePatch(
     name = "Download all (library)",
-    description = "Thêm nút tải tất cả media của các bài Imagine đã chọn, giữ nguyên nút Download.",
+    description = "Add a button that downloads all media of the selected Imagine posts, keeping the original Download button.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)
@@ -89,7 +89,7 @@ val libraryDownloadAllPatch = bytecodePatch(
             addInstructionsWithLabels(
                 buttonIndex + 1,
                 """
-                    sget-object v20, ${GrokNames.DOWNLOAD_ICON}
+                    sget-object v20, ${GrokNames.DOWNLOAD_ALL_ICON}
                     const v0, $downloadAllStringId
                     invoke-static {v0, v6}, ${GrokNames.GET_STRING}
                     move-result-object v17

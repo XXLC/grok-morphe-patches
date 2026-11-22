@@ -51,7 +51,7 @@ private object SettingsUpsellEligibilityFingerprint : Fingerprint(
 @Suppress("unused")
 val hideUpgradePromptsPatch = bytecodePatch(
     name = "Hide upgrade prompts",
-    description = "Ẩn banner giới hạn Imagine và thẻ mời nâng cấp trong Cài đặt. Giữ dữ liệu hạn mức và quản lý thuê bao. Thay đổi Compose chưa kiểm trên thiết bị.",
+    description = "Hide the Imagine limit banner and the upgrade card in Settings, keeping usage data and subscription management. Compose changes are not tested on a device.",
     default = false,
 ) {
     compatibleWith(grokCompatibility)

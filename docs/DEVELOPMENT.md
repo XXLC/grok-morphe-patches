@@ -105,8 +105,9 @@ is changed by these three patches. The risky Compose changes are opt-in;
 Imagine image/video deletion is permanent on the server, with no Undo. Resource
 inspection found permanent-deletion descriptions; the Undo labels found concern
 bots or drawing strokes, not recovery of deleted Imagine media. The patch does
-not implement recovery. It runs callbacks during composition: repeated
-recomposition before dismissal could invoke them again. Device testing must
+not implement recovery. It runs the callbacks in a Compose `SideEffect` after
+composition commits; repeated recomposition before dismissal could still invoke
+them again, so `DeleteGuard` ignores repeat runs within 500 ms. Device testing must
 cover first composition, skipped and repeated recompositions, dismissal,
 subscription management, usage rendering and the null banner state.
 

@@ -8,7 +8,7 @@ import app.morphe.patcher.patch.booleanOption
 internal fun PatchBuilder<*>.enabledOption(default: Boolean = true) = booleanOption(
     key = "enabled",
     default = default,
-    title = "Bật bản vá",
-    description = "Mặc định áp dụng khi chọn bản vá; tắt để bỏ qua thay đổi mà vẫn giữ lựa chọn.",
+    title = "Enable patch",
+    description = "Applied by default when the patch is selected; turn off to skip its changes while keeping it selected.",
     required = true,
 )

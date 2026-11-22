@@ -39,8 +39,9 @@ internal fun MutableMethod.appendCopyPromptAction() {
     requireRegisters(returnIndex, 0)
     // v0 là danh sách; giữ p0=v26 và v10/v24 của đường gốc.
     // v1..v6 đã chết ở return cuối; khối tự tạo bản sao danh sách.
-    // Chỉ thêm khi media hiện tại đã tạo xong (Ll70/f0;->D != null): trạng thái lỗi/đang tạo
-    // thì C trả null, nơi app tự hiển thị Retry/Copy prompt riêng.
+    // Chỉ thêm khi media hiện tại đã tạo xong và không bị kiểm duyệt (Ll70/f0;->D != null và
+    // Le8/o;->s() == false): lỗi/đang tạo thì D trả null; media bị kiểm duyệt vẫn là Le8/o; nhưng
+    // s() trả true, khi đó app tự hiển thị Retry nên không được chen mục Copy prompt.
     addInstructionsWithLabels(
         returnIndex,
         """
@@ -48,11 +49,14 @@ internal fun MutableMethod.appendCopyPromptAction() {
             invoke-static {v5}, ${GrokNames.COMPLETED_MEDIA}
             move-result-object v5
             if-eqz v5, :d2_copy_menu_done
-            move-object/from16 v5, p0
-            iget-object v5, v5, ${GrokNames.CURRENT_PROMPT}
-            invoke-static {v5}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
+            invoke-interface {v5}, ${GrokNames.MEDIA_MODERATED}
             move-result v5
             if-nez v5, :d2_copy_menu_done
+            move-object/from16 v5, p0
+            iget-object v5, v5, ${GrokNames.CURRENT_PROMPT}
+            invoke-static {v5}, Lio/github/xxlc/extension/grok/ClipboardHelper;->canCopy(Ljava/lang/String;)Z
+            move-result v5
+            if-eqz v5, :d2_copy_menu_done
             new-instance v1, Ljava/util/ArrayList;
             invoke-direct {v1, v0}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
             new-instance v2, ${GrokNames.DOWNLOAD_ACTION}
