@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.1.0",
+  "version": "1.2.0-dev.1",
   "patches": [
     {
       "name": "Bypass license check",
@@ -18,12 +18,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -36,7 +36,7 @@
     },
     {
       "name": "Copy prompt",
-      "description": "Thêm mục sao chép prompt media hiện tại vào clipboard bằng icon sao chép; chỉ hiện khi media đã tạo xong (không che mục Thử lại khi tạo lỗi) và prompt không rỗng. Model 1.2.57 không có seed nên không sao chép seed. Chưa kiểm trên thiết bị.",
+      "description": "Thêm mục sao chép prompt media hiện tại vào clipboard bằng icon sao chép; chỉ hiện khi media đã tạo xong (không che mục Thử lại khi tạo lỗi) và prompt không rỗng. Model 1.2.59 không có seed nên không sao chép seed. Chưa kiểm trên thiết bị.",
       "default": true,
       "category": null,
       "compatiblePackages": [
@@ -50,12 +50,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -92,12 +92,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -134,12 +134,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -176,12 +176,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -218,12 +218,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -260,12 +260,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -302,12 +302,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -344,12 +344,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -386,12 +386,54 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
+              },
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        }
+      ],
+      "options": [
+        {
+          "key": "enabled",
+          "title": "Bật bản vá",
+          "description": "Mặc định áp dụng khi chọn bản vá; tắt để bỏ qua thay đổi mà vẫn giữ lựa chọn.",
+          "required": true,
+          "type": "kotlin.Boolean",
+          "default": true,
+          "values": null
+        }
+      ]
+    },
+    {
+      "name": "Show Imagine tab",
+      "description": "Luôn hiện tab Imagine ở màn hình chính, kể cả khi cờ home layout v2 ẩn nó theo tuổi tài khoản hoặc thời gian không dùng Imagine. Không đổi khoá Imagine của Team/Org do quản trị viên đặt. Chưa kiểm trên thiết bị.",
+      "default": true,
+      "category": null,
+      "compatiblePackages": [
+        {
+          "packageName": "ai.x.grok",
+          "name": "Grok",
+          "description": null,
+          "apkFileType": "APKM",
+          "appIconColor": "#000000",
+          "signatures": null,
+          "formFactor": "MOBILE",
+          "targets": [
+            {
+              "version": "1.2.59-release.00",
+              "versionCodes": {
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,
@@ -428,12 +470,12 @@
           "formFactor": "MOBILE",
           "targets": [
             {
-              "version": "1.2.57-release.01",
+              "version": "1.2.59-release.00",
               "versionCodes": {
-                "ARM64_V8A": 11257201,
-                "ARMEABI_V7A": 11257201,
-                "X86_64": 11257201,
-                "X86": 11257201
+                "ARM64_V8A": 11259200,
+                "ARMEABI_V7A": 11259200,
+                "X86_64": 11259200,
+                "X86": 11259200
               },
               "isExperimental": false,
               "minSdk": null,

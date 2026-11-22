@@ -1,3 +1,9 @@
+## [1.2.0-dev.1](https://github.com/XXLC/grok-morphe-patches/compare/v1.1.0...v1.2.0-dev.1) (2026-11-22)
+
+### ✨ New Features
+
+* support Grok 1.2.59 and add Show Imagine tab patch ([9fcb04f](https://github.com/XXLC/grok-morphe-patches/commit/9fcb04fe13c8b29708540c62ef8ecfd490e45a80))
+
 ## [1.1.0](https://github.com/XXLC/grok-morphe-patches/compare/v1.0.1...v1.1.0) (2026-11-22)
 
 ### ✨ New Features
