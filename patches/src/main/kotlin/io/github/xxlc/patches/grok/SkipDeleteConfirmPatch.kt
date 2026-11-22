@@ -58,23 +58,23 @@ private fun MutableMethod.skipConfirmDialogWithSideEffect(
     requireRegisters(dialogIndex, 0, 1, 2, 3, 4, 5, 6, 7)
     requireRegisters(endIndex, composerReg)
     check(startIndex < executeIndex && executeIndex < dialogIndex && dialogIndex < endIndex) {
-        "Thứ tự nhóm Compose của hộp thoại xoá không khớp smali gốc: $this"
+        "Compose group order for delete dialog does not match original smali: $this"
     }
     check(
         implementation!!.instructions[executeIndex + 1].opcode == Opcode.MOVE_RESULT &&
             implementation!!.instructions[executeIndex + 2].opcode == Opcode.IF_EQZ,
     ) {
-        "Cổng recomposition của hộp thoại xoá không khớp smali gốc: $this"
+        "Delete dialog recomposition gate does not match original smali: $this"
     }
     requireRegisters(executeIndex + 1, 1)
     requireRegisters(executeIndex + 2, 1)
-    // Lấy chính đích goto sau lời gọi dialog, không nhảy qua bước đóng nhóm.
+    // Take exact goto target after dialog call, without jumping over group closing.
     val endBranch = implementation!!.instructions[dialogIndex + 1] as BuilderOffsetInstruction
     check(endBranch.opcode == Opcode.GOTO && endBranch.target.location.index == endIndex) {
-        "Đích kết thúc nhóm Compose của hộp thoại xoá không hợp lệ: $this"
+        "Compose group end target for delete dialog is invalid: $this"
     }
-    // Chạy sau khi composition commit qua SideEffect để tránh backwards-write;
-    // v0..v1 đã chết tại điểm chèn và p0..p4 còn sống cho phần đăng ký recomposition ở cuối.
+    // Run after composition commits via SideEffect to prevent backwards-write;
+    // v0..v1 are dead at insertion point and p0..p4 remain live for recomposition registration at the end.
     addInstructionsWithLabels(
         executeIndex + 3,
         """

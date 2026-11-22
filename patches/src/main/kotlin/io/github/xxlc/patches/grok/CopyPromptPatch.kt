@@ -23,8 +23,8 @@ val copyPromptPatch = bytecodePatch(
             requireRegisterCount(22)
             val mediaIndex = indexOfReference(Opcode.INVOKE_VIRTUAL, GrokNames.FIND_CURRENT_MEDIA)
             requireRegisters(mediaIndex, 1, 2)
-            // Sau ba move-object đầu: v0/v1/v2 sống, v5/v6 chưa sống.
-            // Cả nhánh không phải Copy và đoạn gốc đều giữ p0..p3.
+            // After first three move-objects: v0/v1/v2 live, v5/v6 not yet live.
+            // Both non-Copy branch and original code preserve p0..p3.
             addInstructionsWithLabels(
                 mediaIndex,
                 """

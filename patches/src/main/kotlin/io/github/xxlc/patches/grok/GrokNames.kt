@@ -1,7 +1,7 @@
 package io.github.xxlc.patches.grok
 
-// Tên và discriminator đã đối chiếu với Grok 1.2.59-release.00 (versionCode 11259200).
-// Khi nâng phiên bản, kiểm lại cả chữ ký, luồng điều khiển và thanh ghi.
+// Names and discriminators matched against Grok 1.2.59-release.00 (versionCode 11259200).
+// When upgrading versions, recheck signatures, control flow, and registers.
 internal object GrokNames {
     const val DOWNLOAD_ACTION = "La8/s0;"
     const val DOWNLOAD_STATE = "La8/o2;"
@@ -128,10 +128,10 @@ internal object GrokNames {
     const val SELECTION_ACTION = "${LIBRARY_SELECTION_EVENT}->a:${LIBRARY_ACTION}"
     const val NEW_LIBRARY_DOWNLOAD_REQUEST = "${LIBRARY_DOWNLOAD_REQUEST}-><init>(${POST_ID}${MEDIA})V"
 
-    // Kiểm từ Lwa/s2;->o0: nhánh tải xuống dùng Lv0/b;-><init>(..., 0xd) để gọi Lwa/s2;->i.
+    // Verified from Lwa/s2;->o0: download branch uses Lv0/b;-><init>(..., 0xd) to call Lwa/s2;->i.
     const val POST_DOWNLOAD_DISCRIMINATOR = "0xd"
     const val LIBRARY_DOWNLOAD_ALL_DISCRIMINATOR = "0x7f"
-    // Kiểm từ Lcc/b;->invoke: nút Download dùng Lc3/ue;-><init>(v10, 0x13).
+    // Verified from Lcc/b;->invoke: Download button uses Lc3/ue;-><init>(v10, 0x13).
     const val LIBRARY_DOWNLOAD_DISCRIMINATOR = 0x13
 
     const val COPY_PROMPT_FLAG_NAME = "c"

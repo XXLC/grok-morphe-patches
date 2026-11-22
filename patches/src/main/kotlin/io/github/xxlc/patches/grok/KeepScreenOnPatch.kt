@@ -24,11 +24,11 @@ val keepScreenOnPatch = bytecodePatch(
                 returnType = "V",
                 parameters = emptyList(),
             ).method.apply {
-                requireRegisterCount(4) // .locals 3; p0 = v3, v0/v1 chưa sống.
+                requireRegisterCount(4) // .locals 3; p0 = v3, v0/v1 not yet live.
                 val superIndex = indexOfReference(Opcode.INVOKE_SUPER, "${GrokNames.ACTIVITY_SUPER}->$lifecycle()V")
-                check(superIndex == 0) { "Lời gọi vòng đời cha không ở đầu phương thức." }
+                check(superIndex == 0) { "Super lifecycle call is not at start of method." }
                 requireRegisters(superIndex, 3)
-                // Đứng trước try_start_0; không chuyển nhãn try/catch sang mã mới.
+                // Sits before try_start_0; do not move try/catch labels to new instructions.
                 addInstructions(
                     superIndex + 1,
                     """

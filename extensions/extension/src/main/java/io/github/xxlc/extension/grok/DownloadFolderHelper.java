@@ -2,7 +2,7 @@ package io.github.xxlc.extension.grok;
 
 import java.util.Locale;
 
-/** Phân loại thư mục tải xuống theo MIME hoặc phần mở rộng tệp. */
+/** Classifies download folder by MIME type or file extension. */
 public final class DownloadFolderHelper {
     private static final String FOLDER_ROOT = "Download/Grok";
     private static final String FOLDER_PICTURES = "Download/Grok/Pictures";
@@ -11,7 +11,7 @@ public final class DownloadFolderHelper {
     private DownloadFolderHelper() {
     }
 
-    /** True khi MIME hoặc phần mở rộng cho thấy tệp là ảnh hoặc video. */
+    /** True when MIME type or file extension indicates the file is an image or video. */
     public static boolean isMedia(String mime, String fileName) {
         String folder = resolveFolder(mime, fileName);
         return FOLDER_PICTURES.equals(folder) || FOLDER_VIDEOS.equals(folder);
@@ -54,7 +54,7 @@ public final class DownloadFolderHelper {
                 }
             }
         } catch (Throwable ignored) {
-            // Không ném ngoại lệ ra luồng tải của ứng dụng.
+            // Do not throw exceptions to the app's download thread.
         }
         return FOLDER_ROOT;
     }
@@ -65,7 +65,7 @@ public final class DownloadFolderHelper {
         return subFolder + "/" + safeFileName(fileName);
     }
 
-    /** Chỉ giữ tên tệp cuối cùng: bỏ dấu phân cách thư mục và các đoạn "." hoặc ".." để không thoát khỏi Download/Grok. */
+    /** Keeps only the final file name: strips path separators and "." or ".." segments to avoid escaping Download/Grok. */
     static String safeFileName(String fileName) {
         String name = fileName == null ? "" : fileName.replace('\\', '/');
         name = name.substring(name.lastIndexOf('/') + 1).trim();

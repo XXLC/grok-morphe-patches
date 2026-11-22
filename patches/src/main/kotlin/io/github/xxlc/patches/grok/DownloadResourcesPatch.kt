@@ -6,10 +6,10 @@ import org.w3c.dom.Element
 
 private val stringIds = mutableMapOf<String, Int>()
 
-// Chỉ đọc sau khi dependency tài nguyên đã chạy; không trả về ID 0 giả hợp lệ.
+// Only read after resource dependency has run; never returns dummy valid ID 0.
 internal fun stringId(name: String): Int = stringIds.getValue(name)
 
-// Không có tên để patch dùng chung không xuất hiện trong danh sách của Manager.
+// Unnamed so shared patch does not appear in Manager list.
 internal val downloadResourcesPatch = resourcePatch {
     compatibleWith(grokCompatibility)
 
@@ -31,14 +31,14 @@ internal val downloadResourcesPatch = resourcePatch {
                             it.setAttribute("name", string.name)
                             document.documentElement.appendChild(it)
                         }
-                    // DOM giữ nguyên %1$d; dấu $ chỉ cần escape trong mã Kotlin.
+                    // DOM preserves %1$d; $ only needs escaping in Kotlin code.
                     element.textContent = if (directory == "values-vi") string.vi else string.en
                 }
             }
         }
 
-        // resourceId() chỉ thấy tài nguyên đầu vào. Cấp ID mới trong public.xml
-        // để cả bytecode và bước biên dịch tài nguyên dùng cùng một ID.
+        // resourceId() only sees input resources. Allocate new IDs in public.xml
+        // so both bytecode and resource compilation steps use the same ID.
         PublicXmlManager(get("res/values/public.xml")).use { publicIds ->
             xxlcStrings.forEach { string ->
                 publicIds.createPublicId("string", string.name)

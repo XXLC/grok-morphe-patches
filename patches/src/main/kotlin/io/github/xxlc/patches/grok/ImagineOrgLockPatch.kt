@@ -24,7 +24,7 @@ val ignoreImagineOrgLockPatch = bytecodePatch(
     execute {
         if (enabled != true) return@execute
         ImagineOrgLockFingerprint.method.apply {
-            // .locals 4, p0 = v4; true nghĩa là Imagine bị khoá (team tắt enableImagine hoặc admin bật disableImagine).
+            // .locals 4, p0 = v4; true means Imagine is locked (team disabled enableImagine or admin enabled disableImagine).
             requireRegisterCount(5)
             addInstructions(
                 0,

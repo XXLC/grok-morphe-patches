@@ -20,14 +20,14 @@ val postDownloadAllPatch = bytecodePatch(
         if (enabled != true) return@execute
 
         PostMenuFingerprint.method.apply {
-            requireRegisterCount(27) // .locals 26 và một tham số tĩnh.
+            requireRegisterCount(27) // .locals 26 and one static parameter.
             val returnIndex = implementation!!.instructions.lastIndex
             check(implementation!!.instructions[returnIndex].opcode == Opcode.RETURN_OBJECT) {
-                "Điểm kết thúc danh sách menu không khớp smali gốc."
+                "Menu list end point does not match original smali."
             }
             requireRegisters(returnIndex, 0)
-            // Cuối method chỉ còn v0 (danh sách) và v10 (cờ của Ly7/m2) cần giữ.
-            // Tạo bản sao rồi chèn ngay sau Download; nếu thiếu (đang tạo, lỗi, bị kiểm duyệt) thì không thêm.
+            // At method end only v0 (list) and v10 (Ly7/m2 flag) need to be preserved.
+            // Clone list then insert right after Download; skip if missing (generating, error, moderated).
             addInstructionsWithLabels(
                 returnIndex,
                 """
@@ -65,15 +65,15 @@ val postDownloadAllPatch = bytecodePatch(
 
         PostMenuLabelFingerprint.method.apply {
             requireRegisterCount(10)
-            // Fingerprint lưu chỉ số trên mã gốc; các patch nhãn khác có thể đã chèn ở đầu.
-            // Giữ ID tra bằng tên tài nguyên, nhưng tìm lại vị trí trên mã mutable hiện tại.
+            // Fingerprint stores indices on original code; other label patches may have inserted at start.
+            // Keep ID looked up by resource name, but re-locate index on current mutable code.
             val saveStringId = (PostMenuLabelFingerprint.instructionMatches.single().instruction as NarrowLiteralInstruction).narrowLiteral
             val labelIndex = implementation!!.instructions.withIndex().single { (_, instruction) ->
                 instruction.opcode == Opcode.CONST &&
                     (instruction as? NarrowLiteralInstruction)?.narrowLiteral == saveStringId
             }.index
             requireRegisters(labelIndex, 4)
-            // Hằng số gốc đã được fingerprint tra bằng tên tài nguyên.
+            // Original constant has been looked up by resource name via fingerprint.
             addInstructionsWithLabels(
                 labelIndex + 1,
                 """
@@ -93,8 +93,8 @@ val postDownloadAllPatch = bytecodePatch(
             requireRegisterCount(22)
             val sendIndex = indexOfReference(Opcode.SGET_OBJECT, GrokNames.POST_DOWNLOAD_SINGLETON)
             requireRegisters(sendIndex, 0)
-            // Giữ thanh ghi đã đối chiếu và discriminator 0xd của callback tải.
-            // Media hiện tại vẫn đi qua nhánh gốc sau khi gửi các media còn lại.
+            // Preserve verified registers and download callback discriminator 0xd.
+            // Current media still passes through original branch after dispatching remaining media.
             addInstructionsWithLabels(
                 sendIndex,
                 """

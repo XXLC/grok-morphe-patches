@@ -77,7 +77,7 @@ val downloadFileNamesPatch = bytecodePatch(
                 """,
             )
         }
-        // Luồng lưu chung (thư viện, GrokBot): đổi tên trước khi tên bị làm sạch, giữ phần mở rộng.
+        // Shared save flow (library, GrokBot): rename before name is sanitized, preserve file extension.
         Fingerprint(
             definingClass = GrokNames.PUBLIC_VIDEO_FILES,
             name = GrokNames.PUBLIC_MEDIA_SAVE_METHOD,
@@ -106,7 +106,7 @@ val downloadFileNamesPatch = bytecodePatch(
                 val fileRegister = "p0"
                 requireRegisters(guessIndex, if (registers == 16) 12 else 6, 0, if (registers == 16) 14 else 8)
                 requireRegisters(guessIndex + 1, if (registers == 16) 12 else 6)
-                // Ghi đè đúng kết quả guessFileName, giữ URI, Context, MIME và vòng dedupe.
+                // Overwrite only guessFileName result, preserving URI, Context, MIME, and dedupe loop.
                 addInstructions(
                     guessIndex + 2,
                     """

@@ -24,10 +24,10 @@ val showImagineTabPatch = bytecodePatch(
     execute {
         if (enabled != true) return@execute
         ImagineTabHiddenFingerprint.method.apply {
-            // .locals 13, p0 = v13 (this), p1 = v14 (continuation); chỉ dùng p0 làm thanh ghi tạm.
+            // .locals 13, p0 = v13 (this), p1 = v14 (continuation); only use p0 as scratch register.
             requireRegisterCount(15)
-            // Kết quả Boolean.TRUE nghĩa là ẩn tab; trả FALSE ngay, không treo coroutine,
-            // nên không đọc cờ cấu hình, DataStore hay gọi mạng khi tính trạng thái.
+            // Result Boolean.TRUE means hide tab; return FALSE immediately without suspending coroutine,
+            // avoiding config flag reads, DataStore access, or network calls when computing state.
             addInstructions(
                 0,
                 """

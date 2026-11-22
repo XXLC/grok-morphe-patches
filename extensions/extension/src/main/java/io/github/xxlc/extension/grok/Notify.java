@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-/** Thông báo ngắn cho số yêu cầu tải đã được chuẩn bị trong thư viện. */
+/** Short toast notification for the number of download requests queued in the library. */
 public final class Notify {
     private Notify() {
     }
@@ -26,7 +26,7 @@ public final class Notify {
             }
             Context toastContext = context;
 
-            // ID tài nguyên được cấp lúc vá chưa được truyền vào tiện ích này.
+            // Resource ID assigned during patching is not passed into this helper.
             Locale locale = Locale.getDefault();
             String format = "vi".equals(locale.getLanguage())
                     ? "Đã đưa %1$d tệp vào hàng đợi tải"
@@ -36,11 +36,11 @@ public final class Notify {
                 try {
                     Toast.makeText(toastContext, message, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {
-                    // Không để lỗi thông báo làm gián đoạn thao tác tải.
+                    // Do not let notification errors interrupt download operations.
                 }
             });
         } catch (Exception ignored) {
-            // Reflection hoặc main looper không khả dụng thì bỏ qua thông báo.
+            // Skip notification if reflection or main looper is unavailable.
         }
     }
 
@@ -48,7 +48,7 @@ public final class Notify {
         try {
             return (Context) Class.forName(className).getMethod(methodName).invoke(null);
         } catch (Exception ignored) {
-            // Bước này không khả dụng thì để bên gọi thử phương án tiếp theo.
+            // If this step is unavailable, let caller try the next fallback.
             return null;
         }
     }

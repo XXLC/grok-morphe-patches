@@ -5,7 +5,7 @@ import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLa
 import app.morphe.patcher.util.proxy.mutableTypes.MutableMethod
 import com.android.tools.smali.dexlib2.Opcode
 
-// Chỉ tra .method trong execute có BytecodePatchContext; các điểm chèn tìm trên mã mutable.
+// Only access .method in execute with BytecodePatchContext; find insertion points on mutable code.
 internal fun postMenuForExtraAction(): Fingerprint = Fingerprint(
     definingClass = GrokNames.POST_MENU,
     name = GrokNames.POST_MENU_METHOD,
@@ -34,14 +34,14 @@ internal fun MutableMethod.appendCopyPromptAction() {
     requireRegisterCount(27)
     val returnIndex = implementation!!.instructions.lastIndex
     check(implementation!!.instructions[returnIndex].opcode == Opcode.RETURN_OBJECT) {
-        "Điểm kết thúc danh sách menu không khớp smali gốc."
+        "Menu list end point does not match original smali."
     }
     requireRegisters(returnIndex, 0)
-    // v0 là danh sách; giữ p0=v26 và v10/v24 của đường gốc.
-    // v1..v6 đã chết ở return cuối; khối tự tạo bản sao danh sách.
-    // Chỉ thêm khi media hiện tại đã tạo xong và không bị kiểm duyệt (Ll70/f0;->D != null và
-    // Le8/o;->s() == false): lỗi/đang tạo thì D trả null; media bị kiểm duyệt vẫn là Le8/o; nhưng
-    // s() trả true, khi đó app tự hiển thị Retry nên không được chen mục Copy prompt.
+    // v0 is list; preserve p0=v26 and v10/v24 of original path.
+    // v1..v6 are dead at final return; block creates its own list copy.
+    // Only add when current media is finished and unmoderated (Ll70/f0;->D != null and
+    // Le8/o;->s() == false): on error/generating D returns null; moderated media is still Le8/o; but
+    // s() returns true, where the app displays Retry so Copy prompt must not be inserted.
     addInstructionsWithLabels(
         returnIndex,
         """
@@ -77,7 +77,7 @@ internal fun MutableMethod.appendCopyPromptAction() {
 
 internal fun MutableMethod.labelCopyPromptAction(stringId: Int) {
     requireRegisterCount(10)
-    // Ở đầu chỉ p0=v9 sống. Đường gốc khởi tạo lại v0 trước khi đọc.
+    // At entry only p0=v9 is live. Original path re-initializes v0 before reading.
     addInstructionsWithLabels(
         0,
         """

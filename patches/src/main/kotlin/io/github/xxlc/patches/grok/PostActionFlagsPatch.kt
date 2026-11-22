@@ -6,7 +6,7 @@ import app.morphe.patcher.util.proxy.mutableTypes.MutableField.Companion.toMutab
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.immutable.ImmutableField
 
-// Hạ tầng không tên, chỉ thêm một lần dù nhiều patch cùng phụ thuộc.
+// Unnamed infrastructure, added only once even if multiple patches depend on it.
 internal val postActionFlagsPatch = bytecodePatch {
     compatibleWith(grokCompatibility)
 
@@ -17,7 +17,7 @@ internal val postActionFlagsPatch = bytecodePatch {
             GrokNames.COPY_PROMPT_FLAG_NAME,
         ).forEach { name ->
             check(actionClass.fields.none { it.name == name }) {
-                "Trường cờ hành động đã tồn tại: $name"
+                "Action flag field already exists: $name"
             }
             actionClass.fields.add(
                 ImmutableField(
@@ -29,8 +29,8 @@ internal val postActionFlagsPatch = bytecodePatch {
 
         DownloadActionEqualsFingerprint.method.apply {
             requireRegisterCount(5)
-            // v0..v2 chưa sống ở đầu; giữ p0/p1 để phần gốc so trạng thái a.
-            // hashCode được phép trùng khi equals khác nhau, không đổi giao ước.
+            // v0..v2 not yet live at start; preserve p0/p1 for original code to compare state a.
+            // hashCode collisions are allowed when equals differs, preserving contract.
             addInstructionsWithLabels(
                 0,
                 """

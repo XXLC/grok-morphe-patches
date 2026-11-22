@@ -1,3 +1,9 @@
+## [1.2.1-dev.1](https://github.com/XXLC/grok-morphe-patches/compare/v1.2.0...v1.2.1-dev.1) (2026-11-22)
+
+### 🐛 Bug Fixes
+
+* strip query and fragment from renamed media names, translate maintainer comments to English ([8cdea7c](https://github.com/XXLC/grok-morphe-patches/commit/8cdea7c36b4128b446b516aa0bf02efb93717d2f))
+
 ## [1.2.0](https://github.com/XXLC/grok-morphe-patches/compare/v1.1.0...v1.2.0) (2026-11-22)
 
 ### ✨ New Features
