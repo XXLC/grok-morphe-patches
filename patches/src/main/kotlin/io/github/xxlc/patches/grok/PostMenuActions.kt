@@ -39,7 +39,7 @@ internal fun MutableMethod.appendCopyPromptAction() {
     requireRegisters(returnIndex, 0)
     // v0 là danh sách; giữ p0=v26 và v10/v24 của đường gốc.
     // v1..v6 đã chết ở return cuối; khối tự tạo bản sao danh sách.
-    // Chỉ thêm khi media hiện tại đã tạo xong (Lc70/r;->C != null): trạng thái lỗi/đang tạo
+    // Chỉ thêm khi media hiện tại đã tạo xong (Ll70/f0;->D != null): trạng thái lỗi/đang tạo
     // thì C trả null, nơi app tự hiển thị Retry/Copy prompt riêng.
     addInstructionsWithLabels(
         returnIndex,
@@ -72,8 +72,8 @@ internal fun MutableMethod.appendCopyPromptAction() {
 }
 
 internal fun MutableMethod.labelCopyPromptAction(stringId: Int) {
-    requireRegisterCount(15)
-    // Ở đầu chỉ p0=v14 sống. Đường gốc khởi tạo lại v0 trước khi đọc.
+    requireRegisterCount(10)
+    // Ở đầu chỉ p0=v9 sống. Đường gốc khởi tạo lại v0 trước khi đọc.
     addInstructionsWithLabels(
         0,
         """
@@ -84,8 +84,8 @@ internal fun MutableMethod.labelCopyPromptAction(stringId: Int) {
             iget-boolean v0, v0, ${GrokNames.COPY_PROMPT_FLAG}
             if-eqz v0, :d2_copy_label_original
             new-instance v3, ${GrokNames.MENU_LABEL}
-            sget-object v7, ${GrokNames.COPY_ICON}
-            const/4 v8, 0x0
+            const/4 v7, 0x0
+            sget-object v8, ${GrokNames.COPY_ICON}
             const/16 v6, 0xc
             const v4, $stringId
             const/4 v5, 0x0

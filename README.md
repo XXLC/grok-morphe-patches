@@ -4,7 +4,7 @@ Patches by XXLC for Grok Android, compatible with Morphe Manager.
 
 ## Supported app
 
-Supports only `ai.x.grok` **1.2.57-release.01**, versionCode **11257201**,
+Supports only `ai.x.grok` **1.2.59-release.00**, versionCode **11259200**,
 APKMirror **`.apkm`** input.
 
 ## Install with Morphe Manager
@@ -24,7 +24,8 @@ Select the supported app file and apply the patches.
 | Download best video quality | Select the best video URL already supplied by the server, preserving caption/music overlays and falling back to the original URL when needed. Images are unchanged. Not tested on a device. | Enabled |
 | Download file names | Use `Grok_yyyyMMdd_HHmmss_SSS_sequence` names for downloaded images/videos, preserving extensions and existing deduplication. Not tested on a device. | Enabled |
 | Download folders | Save every download, from inside a post and from the library, to `Download/Grok/Pictures` (images), `Download/Grok/Videos` (videos) or `Download/Grok` (other files), using the MediaStore Downloads collection (or the public Download directory before Android 10). Without this patch, library downloads land in the root `Download` folder. Includes the media viewer, GrokBot image saves and DownloadManager saves. Not tested on a device. | Enabled |
-| Copy prompt | Add a post menu item with the app's copy icon that copies the current media prompt; it is shown only for finished media (not while generation is loading or failed, so Retry stays visible) and hidden when the prompt is empty. No seed field was found in the 1.2.57 model. Not tested on a device. | Enabled |
+| Copy prompt | Add a post menu item with the app's copy icon that copies the current media prompt; it is shown only for finished media (not while generation is loading or failed, so Retry stays visible) and hidden when the prompt is empty. No seed field was found in the 1.2.59 model. Not tested on a device. | Enabled |
+| Show Imagine tab | Always show the Imagine tab on the home screen, even when the remote home-layout flag hides it for new accounts or accounts that have not used Imagine recently. Team/Org admin locks are not overridden. Not tested on a device. | Enabled |
 | Keep screen on | Prevent automatic screen timeout while Grok's main Activity is resumed, including chat. Uses more battery. Not tested on a device. | Disabled |
 | Disable telemetry | Stop internal analytics events, Mixpanel tracking and Hightouch payload submission; force Crashlytics collection off. Not tested on a device. | Enabled |
 | Hide upgrade prompts | Hide the Imagine limit banner and Settings upsell card, preserving usage data and subscription management. Not tested on a device. | Disabled |
@@ -40,18 +41,14 @@ prepared for download, not completed downloads.
 
 ## Verification
 
-- Grok 1.2.57-release.01 has not been tested on a device. The `v1.1.0-dev.2`
-  bundle builds in CI and patched the APK with Morphe Desktop CLI v1.20.0
-  (`--validate`, full bytecode mode). A static comparison of the patched DEX
-  against the original found only the intended method changes, valid branch
-  targets, unchanged register counts and a valid v2 signature.
-- Morphe's resource rebuild removed the literal quotes around the default string
-  `grok_voice_therapist_title`; this is outside these patches and only affects a
-  label.
+- Grok 1.2.59-release.00 has not been tested on a device. Names, registers and
+  branch targets were re-derived from the decoded 1.2.59 smali; CI build and
+  Morphe Desktop CLI patching results are recorded below once run.
+- The previous stable release `v1.1.0` supports Grok 1.2.57-release.01.
 
 ## Known limitations
 
-- All new patches and the 1.2.57 changes have not been tested on a device.
+- All new patches and the 1.2.59 changes have not been tested on a device.
 - Selecting Copy prompt or Download all (post) runs the unnamed
   `PostActionFlagsPatch.kt` dependency. It changes equality comparisons for the
   app's Download actions to include the two injected action flags, even when

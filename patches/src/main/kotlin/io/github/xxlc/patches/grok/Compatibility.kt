@@ -11,8 +11,8 @@ internal val grokCompatibility = Compatibility(
     appIconColor = 0x000000,
     targets = listOf(
         AppTarget(
-            version = "1.2.57-release.01",
-            versionCode = 11257201,
+            version = "1.2.59-release.00",
+            versionCode = 11259200,
         ),
     ),
 )

@@ -62,7 +62,7 @@ val postDownloadAllPatch = bytecodePatch(
         }
 
         PostMenuLabelFingerprint.method.apply {
-            requireRegisterCount(15)
+            requireRegisterCount(10)
             // Fingerprint lưu chỉ số trên mã gốc; các patch nhãn khác có thể đã chèn ở đầu.
             // Giữ ID tra bằng tên tài nguyên, nhưng tìm lại vị trí trên mã mutable hiện tại.
             val saveStringId = (PostMenuLabelFingerprint.instructionMatches.single().instruction as NarrowLiteralInstruction).narrowLiteral
@@ -90,7 +90,7 @@ val postDownloadAllPatch = bytecodePatch(
             requireRegisterCount(22)
             val sendIndex = indexOfReference(Opcode.SGET_OBJECT, GrokNames.POST_DOWNLOAD_SINGLETON)
             requireRegisters(sendIndex, 0)
-            // Giữ thanh ghi đã đối chiếu và discriminator 0x15 của callback tải.
+            // Giữ thanh ghi đã đối chiếu và discriminator 0xd của callback tải.
             // Media hiện tại vẫn đi qua nhánh gốc sau khi gửi các media còn lại.
             addInstructionsWithLabels(
                 sendIndex,

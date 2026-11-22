@@ -79,14 +79,14 @@ val downloadFileNamesPatch = bytecodePatch(
         }
         listOf(
             Triple(GrokNames.MEDIA_NAME_METHOD, listOf("Ljava/lang/String;", "Landroid/net/Uri;", "Ljava/lang/String;", "Landroid/content/Context;"), 16),
-            Triple(GrokNames.LEGACY_MEDIA_NAME_METHOD, listOf("Ljava/io/File;", "Ljava/lang/String;", "Ljava/lang/String;"), 9),
+            Triple(GrokNames.LEGACY_MEDIA_NAME_METHOD, listOf("Ljava/lang/String;", "Ljava/io/File;", "Ljava/lang/String;"), 9),
         ).forEach { (name, parameters, registers) ->
             mediaFileMethod(name, parameters, true, "Ljava/lang/String;").method.apply {
                 requireRegisterCount(registers)
                 val guessIndex = indexOfReference(Opcode.INVOKE_STATIC, GUESS_FILE_NAME)
-                val fileRegister = if (name == GrokNames.MEDIA_NAME_METHOD) "p0" else "p1"
-                requireRegisters(guessIndex, if (registers == 16) 12 else 7, 0, if (registers == 16) 14 else 8)
-                requireRegisters(guessIndex + 1, if (registers == 16) 12 else 7)
+                val fileRegister = "p0"
+                requireRegisters(guessIndex, if (registers == 16) 12 else 6, 0, if (registers == 16) 14 else 8)
+                requireRegisters(guessIndex + 1, if (registers == 16) 12 else 6)
                 // Ghi đè đúng kết quả guessFileName, giữ URI, Context, MIME và vòng dedupe.
                 addInstructions(
                     guessIndex + 2,
@@ -125,7 +125,7 @@ val downloadFoldersPatch = bytecodePatch(
             returnType = "Ljava/lang/Object;",
             parameters = listOf("Landroid/content/Context;", "Ljava/io/InputStream;", "Ljava/lang/String;", "Ljava/lang/String;", "Ljava/lang/String;"),
         ).method.apply {
-            requireRegisterCount(10)
+            requireRegisterCount(9)
             val insertIndex = indexOfReference(Opcode.CONST_STRING, "/")
             requireRegisters(insertIndex, 0)
             addInstructions(

@@ -7,7 +7,7 @@ import com.android.tools.smali.dexlib2.Opcode
 @Suppress("unused")
 val copyPromptPatch = bytecodePatch(
     name = "Copy prompt",
-    description = "Thêm mục sao chép prompt media hiện tại vào clipboard bằng icon sao chép; chỉ hiện khi media đã tạo xong (không che mục Thử lại khi tạo lỗi) và prompt không rỗng. Model 1.2.57 không có seed nên không sao chép seed. Chưa kiểm trên thiết bị.",
+    description = "Thêm mục sao chép prompt media hiện tại vào clipboard bằng icon sao chép; chỉ hiện khi media đã tạo xong (không che mục Thử lại khi tạo lỗi) và prompt không rỗng. Model 1.2.59 không có seed nên không sao chép seed. Chưa kiểm trên thiết bị.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)
