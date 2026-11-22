@@ -29,10 +29,10 @@ val libraryDownloadAllPatch = bytecodePatch(
         if (enabled != true) return@execute
 
         LibraryClickFingerprint.method.apply {
-            requireRegisterCount(4) // .locals 3 và p0; v2 chỉ được nạp null sau đoạn chèn; tiền đề chỉ dùng v0, v1.
+            requireRegisterCount(4) // .locals 3 and p0; v2 only loaded with null after insertion; prelude only uses v0, v1.
             val downloadIndex = indexOfReference(Opcode.SGET_OBJECT, GrokNames.LIBRARY_DOWNLOAD_SINGLETON)
             requireRegisters(downloadIndex, 0)
-            // Nhánh switch gốc phải chạy qua thao tác tắt cờ khi bấm Download.
+            // Original switch branch must execute flag-clearing operation when Download is pressed.
             addInstructionsAtControlFlowLabel(
                 downloadIndex,
                 """
@@ -40,8 +40,8 @@ val libraryDownloadAllPatch = bytecodePatch(
                     sput-boolean v0, $STATE_CLASS->all:Z
                 """,
             )
-            // 0x7f nằm ngoài dải 0x0..0x1c; bắt riêng trước packed-switch gốc.
-            // Đường đi thông thường khởi tạo lại v0, v1 trong phần mã gốc.
+            // 0x7f lies outside 0x0..0x1c range; intercept separately before original packed-switch.
+            // Normal path re-initializes v0, v1 in original code.
             addInstructionsWithLabels(
                 0,
                 """
@@ -66,13 +66,13 @@ val libraryDownloadAllPatch = bytecodePatch(
             val instructions = implementation!!.instructions
             val saveIndex = LibraryButtonsFingerprint.instructionMatches.first().index
             requireRegisters(saveIndex, 0)
-            // Có bốn lời gọi cùng chữ ký; lấy lời gọi đầu tiên sau tài nguyên save.
+            // Four calls share the same signature; pick the first call after save resource.
             val buttonIndex = instructions.withIndex().first { (index, instruction) ->
                 index > saveIndex && instruction.opcode == Opcode.INVOKE_STATIC_RANGE &&
                     (instruction as? ReferenceInstruction)?.reference?.toString() ==
                     GrokNames.DRAW_LIBRARY_BUTTON
             }.index
-            // Khóa đúng callback Download 0x13 giữa save và lời gọi vẽ nút.
+            // Lock onto exact Download 0x13 callback between save and button draw call.
             val callbackIndex = instructions.withIndex().single { (index, instruction) ->
                 index in (saveIndex + 1) until buttonIndex && instruction.opcode == Opcode.INVOKE_DIRECT &&
                     (instruction as? ReferenceInstruction)?.reference?.toString() ==
@@ -82,10 +82,10 @@ val libraryDownloadAllPatch = bytecodePatch(
             requireRegisters(callbackIndex - 1, 0)
             check(instructions[callbackIndex - 1].opcode == Opcode.CONST_16 &&
                 (instructions[callbackIndex - 1] as? NarrowLiteralInstruction)?.narrowLiteral == GrokNames.LIBRARY_DOWNLOAD_DISCRIMINATOR) {
-                "Callback của nút Download không khớp smali gốc."
+                "Download button callback does not match original smali."
             }
             requireRegisters(buttonIndex, 16, 17, 18, 19, 20, 21, 22)
-            // Chèn sau lời gọi vẽ Download gốc, giữ cùng bố cục và trạng thái bật/tắt.
+            // Insert after original Download draw call, keeping same layout and enabled state.
             addInstructionsWithLabels(
                 buttonIndex + 1,
                 """
@@ -116,29 +116,29 @@ val libraryDownloadAllPatch = bytecodePatch(
         }
 
         LibrarySelectionFingerprint.method.apply {
-            requireRegisterCount(47) // .locals 45, giữ nguyên số thanh ghi.
+            requireRegisterCount(47) // .locals 45, preserve register count.
             val postIndex = indexOfReference(Opcode.IGET_OBJECT, GrokNames.SELECTED_POST_VALUE)
             val singleIndex = indexOfReference(Opcode.NEW_INSTANCE, GrokNames.LIBRARY_DOWNLOAD_REQUEST)
             val resetIndex = indexOfReference(Opcode.IGET_OBJECT, GrokNames.LIBRARY_DOWNLOAD_PROCESSOR)
             requireRegisters(postIndex, 6, 6)
             requireRegisters(singleIndex, 6)
             requireRegisters(resetIndex, 2, 1)
-            // v7 được ghi lại ngay sau processor; dùng tạm để truyền Context.
+            // v7 is overwritten immediately after processor; used temporarily to pass Context.
             check(implementation!!.instructions[resetIndex + 1].opcode == Opcode.IGET_OBJECT) {
-                "Lệnh ghi lại v7 sau processor không khớp smali gốc."
+                "Instruction overwriting v7 after processor does not match original smali."
             }
             requireRegisters(resetIndex + 1, 7, 1)
 
-            // Lấy đích :cond_2f từ if-eqz v8 ngay sau constructor Lw7/b1.
+            // Obtain :cond_2f target from if-eqz v8 immediately after constructor Lw7/b1.
             val nextPostBranch = implementation!!.instructions[singleIndex + 3] as BuilderOffsetInstruction
             check(nextPostBranch.opcode == Opcode.IF_EQZ) {
-                "Nhánh chuyển sang bài tiếp theo không khớp smali gốc."
+                "Branch advancing to next post does not match original smali."
             }
             requireRegisters(singleIndex + 3, 8)
             val nextPostIndex = nextPostBranch.target.location.index
 
-            // Chèn từ cuối về đầu để các chỉ số chưa dùng không bị dịch chuyển.
-            // :goto_e là đích nhảy nên phải giữ nhãn trên phần xoá cờ.
+            // Insert backwards from end to start so unused indices are not shifted.
+            // :goto_e is a jump target, so keep label on flag-clearing code.
             addInstructionsAtControlFlowLabel(
                 resetIndex,
                 """
@@ -146,9 +146,9 @@ val libraryDownloadAllPatch = bytecodePatch(
                     sput-boolean v2, $STATE_CLASS->all:Z
                 """,
             )
-            // Chèn trước khối xoá cờ vừa thêm: v3 là danh sách request đã gom,
-            // v2/v7 được ghi lại ngay sau đó; v1 giữ handler có Context công khai.
-            // Không đụng vòng coroutine hoặc tăng số thanh ghi.
+            // Insert before newly added flag-clearing block: v3 is collected request list,
+            // v2/v7 are overwritten immediately after; v1 holds handler with public Context.
+            // Avoid touching coroutine loop or increasing register count.
             addInstructionsAtControlFlowLabel(
                 resetIndex,
                 """
@@ -165,8 +165,8 @@ val libraryDownloadAllPatch = bytecodePatch(
                     nop
                 """,
             )
-            // :cond_35 cũng là đích nhảy; vòng lặp phải chạy trước nhánh một media.
-            // v7, v10, v11 đã chết ở :cond_35; v8 (media), v9 và v12 còn sống nên không ghi đè.
+            // :cond_35 is also a jump target; loop must run before single-media branch.
+            // v7, v10, v11 are dead at :cond_35; v8 (media), v9, and v12 remain live, so do not overwrite.
             addInstructionsAtControlFlowLabel(
                 singleIndex,
                 """

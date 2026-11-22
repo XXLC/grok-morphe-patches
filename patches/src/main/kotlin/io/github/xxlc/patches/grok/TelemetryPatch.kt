@@ -17,7 +17,7 @@ private object InternalAnalyticsFingerprint : Fingerprint(
     filters = listOf(string("GrokAnalyticsImpl"), string("trackEvent: ")),
 )
 
-// Chuỗi opt_out_ nằm trong bộ đọc preference, không nằm trong getter boolean.
+// The opt_out_ string is in preference reader, not in boolean getter.
 private object MixpanelOptOutPreferenceFingerprint : Fingerprint(
     definingClass = GrokNames.MIXPANEL_PREFERENCES,
     name = GrokNames.MIXPANEL_READ_OPT_OUT_METHOD,
@@ -73,7 +73,7 @@ val disableTelemetryPatch = bytecodePatch(
         if (enabled != true) return@execute
 
         InternalAnalyticsFingerprint.method.apply {
-            requireRegisterCount(14) // .locals 10, p0 và ba tham số đối tượng.
+            requireRegisterCount(14) // .locals 10, p0 and three object parameters.
             returnEarly()
         }
         MixpanelOptOutPreferenceFingerprint.method.requireRegisterCount(5)
@@ -81,17 +81,17 @@ val disableTelemetryPatch = bytecodePatch(
             requireRegisterCount(3)
             val readIndex = indexOfReference(Opcode.INVOKE_VIRTUAL, GrokNames.MIXPANEL_READ_OPT_OUT)
             requireRegisters(readIndex, 0, 2)
-            // Trả về trước monitor-enter; m/n bỏ gửi khi getter này trả về true.
+            // Return before monitor-enter; m/n skips sending when this getter returns true.
             returnEarly(true)
         }
         HightouchEnqueueFingerprint.method.apply {
             requireRegisterCount(12)
-            // Chỉ bỏ tạo/gửi payload; các caller Runnable không đợi kết quả.
+            // Only drops payload creation/dispatch; Runnable callers do not wait for results.
             returnEarly()
         }
         CrashlyticsCollectionFingerprint.method.apply {
-            requireRegisterCount(5) // p0 là v4, const/4 mã hoá được.
-            // Giữ bộ setter gốc và cân bằng monitor; không trả về sớm ở đây.
+            requireRegisterCount(5) // p0 is v4, encodable by const/4.
+            // Preserve original setter and monitor balance; do not return early here.
             addInstruction(0, "const/4 p0, 0x0")
         }
     }

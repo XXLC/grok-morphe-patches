@@ -26,7 +26,7 @@ val bestVideoQualityPatch = bytecodePatch(
     execute {
         if (enabled != true) return@execute
         VideoDownloadUrlFingerprint.method.apply {
-            requireRegisterCount(32) // .locals 28, không đổi p0..p3 = v28..v31.
+            requireRegisterCount(32) // .locals 28, preserve p0..p3 = v28..v31.
             val urlIndex = indexOfReference(Opcode.INVOKE_VIRTUAL, GrokNames.SELECTED_VIDEO_URL)
             val exportIndex = indexOfReference(Opcode.INVOKE_DIRECT, GrokNames.NEW_VIDEO_EXPORT)
             requireRegisters(urlIndex, 1)
@@ -34,13 +34,13 @@ val bestVideoQualityPatch = bytecodePatch(
             requireRegisters(exportIndex, 10, 12, 1)
             check(exportIndex == urlIndex + 2 &&
                 implementation!!.instructions[urlIndex + 1].opcode == Opcode.MOVE_RESULT_OBJECT) {
-                "Nhánh dựng tệp video không khớp smali gốc."
+                "Video file build branch does not match original smali."
             }
             val videoIndex = indexOfReference(Opcode.IGET_OBJECT, GrokNames.SELECTED_VIDEO)
             requireRegisters(videoIndex, 12, 12)
-            check(videoIndex == urlIndex - 2) { "Nguồn video không khớp điểm chọn URL." }
-            // v13..v15 đã chết sau khi v13/v14 được chép sang v6/v7.
-            // Handler của try_start_10 dùng v0,v3,v5..v9, không đọc v13..v15.
+            check(videoIndex == urlIndex - 2) { "Video source does not match URL selection point." }
+            // v13..v15 are dead after v13/v14 are copied to v6/v7.
+            // try_start_10 handler uses v0, v3, v5..v9, does not read v13..v15.
             addInstructionsWithLabels(
                 urlIndex,
                 """

@@ -4,7 +4,7 @@ internal data class XxlcString(val name: String, val en: String, val vi: String)
 
 internal const val DOWNLOAD_ALL_STRING = "grok_imagine_post_download_all"
 
-// Giữ chuỗi cũ ở đầu để thứ tự cấp ID cho Download all không thay đổi.
+// Keep the older strings first so the ID assignment order for Download all is unchanged.
 internal val xxlcStrings = listOf(
     XxlcString(DOWNLOAD_ALL_STRING, "Download all", "Tải tất cả"),
     XxlcString("grok_xxlc_copy_prompt", "Copy prompt", "Sao chép prompt"),

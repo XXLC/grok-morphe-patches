@@ -65,8 +65,8 @@ val hideUpgradePromptsPatch = bytecodePatch(
             requireRegisterCount(49)
             val bannerIndex = indexOfReference(Opcode.IGET_OBJECT, GrokNames.IMAGINE_LIMIT_BANNER)
             requireRegisters(bannerIndex, 8, 11)
-            // v8 chỉ chứa targetState; lambda trả Unit khi state null.
-            // Chèn ngay sau phép đọc, giữ mọi nhãn và dữ liệu trong v11.
+            // v8 only holds targetState; lambda returns Unit when state is null.
+            // Insert immediately after read, preserving all labels and data in v11.
             addInstruction(bannerIndex + 1, "const/4 v8, 0x0")
         }
         SettingsUpsellTitleFingerprint.method.requireRegisterCount(7)
@@ -75,11 +75,11 @@ val hideUpgradePromptsPatch = bytecodePatch(
             val eligibleIndex = indexOfReference(Opcode.IGET_BOOLEAN, GrokNames.SETTINGS_UPGRADE_ELIGIBLE)
             requireRegisters(eligibleIndex, 14, 2)
             check(implementation!!.instructions[eligibleIndex + 1].opcode == Opcode.IF_NE) {
-                "Nhánh điều kiện mời nâng cấp không khớp smali gốc."
+                "Upsell conditional branch does not match original smali."
             }
             requireRegisters(eligibleIndex + 1, 14, 13)
-            // v13 là 1; ép v14 false để nhánh gốc chọn v2 = 0 tại :cond_f.
-            // v10 (tên thuê bao để quản lý) và nhánh Usage được giữ nguyên.
+            // v13 is 1; force v14 false so original branch selects v2 = 0 at :cond_f.
+            // v10 (managed subscription name) and Usage branch are preserved.
             addInstruction(eligibleIndex + 1, "const/4 v14, 0x0")
         }
     }

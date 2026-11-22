@@ -7,12 +7,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-/** Sao chép prompt trên luồng chính, bỏ qua dữ liệu rỗng và lỗi clipboard. */
+/** Copies prompt on the main thread, ignoring empty data and clipboard errors. */
 public final class ClipboardHelper {
     private ClipboardHelper() {
     }
 
-    /** Cùng điều kiện với copyPrompt: menu chỉ hiện khi có chữ để sao chép. */
+    /** Same condition as copyPrompt: menu is only shown when there is text to copy. */
     public static boolean canCopy(String prompt) {
         return prompt != null && !prompt.trim().isEmpty();
     }
@@ -35,7 +35,7 @@ public final class ClipboardHelper {
                     Toast.makeText(context, copied, Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception ignored) {
-                // Không để lỗi clipboard hoặc thông báo làm gián đoạn menu.
+                // Do not let clipboard or notification errors interrupt the menu.
             }
         });
     }

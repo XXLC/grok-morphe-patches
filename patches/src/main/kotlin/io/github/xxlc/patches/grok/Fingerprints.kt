@@ -9,7 +9,7 @@ import app.morphe.patcher.resource.ResourceType
 import app.morphe.patcher.string
 import com.android.tools.smali.dexlib2.Opcode
 
-// Tên lớp bị làm rối được ghim theo đúng bản Grok đã đối chiếu smali.
+// Obfuscated class names are pinned to the exact Grok version matched against smali.
 internal object LicenseCheckFingerprint : Fingerprint(
     definingClass = "Lcom/pairip/licensecheck/LicenseClient;",
     name = "checkLicense",
