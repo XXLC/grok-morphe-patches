@@ -78,6 +78,9 @@ private fun MutableMethod.skipConfirmDialogWithSideEffect(
     addInstructionsWithLabels(
         executeIndex + 3,
         """
+            invoke-static {}, Lio/github/xxlc/extension/grok/DeleteGuard;->tryAcquire()Z
+            move-result v0
+            if-eqz v0, :$labelName
             new-instance v0, ${GrokNames.COMBINED_CALLBACK}
             const/4 v1, ${GrokNames.DELETE_CONFIRM_EFFECT_DISCRIMINATOR}
             invoke-direct {v0, p1, p2, v1}, ${GrokNames.NEW_COMBINED_CALLBACK}
@@ -91,10 +94,11 @@ private fun MutableMethod.skipConfirmDialogWithSideEffect(
 @Suppress("unused")
 val skipDeleteConfirmationPatch = bytecodePatch(
     name = "Skip delete confirmation",
-    description = "Xoá ảnh/video Imagine và xoá hàng loạt trong thư viện ngay khi chọn xoá (không áp dụng cho xoá hội thoại). Dữ liệu bị xoá vĩnh viễn trên máy chủ, không có hoàn tác. Mặc định tắt; chưa kiểm trên thiết bị.",
+    description = "Delete Imagine images and videos, and bulk-delete library items, as soon as deletion is chosen, without the confirmation dialog (deleting a whole conversation still asks). Data is deleted permanently on the server with no undo. Off by default; not tested on a device.",
     default = false,
 ) {
     compatibleWith(grokCompatibility)
+    extendWith("extensions/extension.mpe")
 
     val enabled by enabledOption(default = true)
 

@@ -11,12 +11,12 @@ import com.android.tools.smali.dexlib2.iface.instruction.NarrowLiteralInstructio
 import com.android.tools.smali.dexlib2.iface.instruction.ReferenceInstruction
 
 private const val STATE_CLASS = "Lio/github/xxlc/extension/grok/DownloadAllState;"
-private const val LIBRARY_CONTEXT = "Lc9/i;->l:Landroid/content/Context;"
+private const val LIBRARY_CONTEXT = "Le9/h;->l:Landroid/content/Context;"
 
 @Suppress("unused")
 val libraryDownloadAllPatch = bytecodePatch(
     name = "Download all (library)",
-    description = "Thêm nút tải tất cả media của các bài Imagine đã chọn, giữ nguyên nút Download.",
+    description = "Add a button that downloads all media of the selected Imagine posts, keeping the original Download button.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)
@@ -29,7 +29,7 @@ val libraryDownloadAllPatch = bytecodePatch(
         if (enabled != true) return@execute
 
         LibraryClickFingerprint.method.apply {
-            requireRegisterCount(3) // .locals 2 và p0; tiền đề chỉ dùng v0, v1.
+            requireRegisterCount(4) // .locals 3 và p0; v2 chỉ được nạp null sau đoạn chèn; tiền đề chỉ dùng v0, v1.
             val downloadIndex = indexOfReference(Opcode.SGET_OBJECT, GrokNames.LIBRARY_DOWNLOAD_SINGLETON)
             requireRegisters(downloadIndex, 0)
             // Nhánh switch gốc phải chạy qua thao tác tắt cờ khi bấm Download.
@@ -72,13 +72,13 @@ val libraryDownloadAllPatch = bytecodePatch(
                     (instruction as? ReferenceInstruction)?.reference?.toString() ==
                     GrokNames.DRAW_LIBRARY_BUTTON
             }.index
-            // Khóa đúng callback Download 0x18 giữa save và lời gọi vẽ nút.
+            // Khóa đúng callback Download 0x13 giữa save và lời gọi vẽ nút.
             val callbackIndex = instructions.withIndex().single { (index, instruction) ->
                 index in (saveIndex + 1) until buttonIndex && instruction.opcode == Opcode.INVOKE_DIRECT &&
                     (instruction as? ReferenceInstruction)?.reference?.toString() ==
                     GrokNames.NEW_LIBRARY_CLICK
             }.index
-            requireRegisters(callbackIndex, 2, 9, 0)
+            requireRegisters(callbackIndex, 3, 10, 0)
             requireRegisters(callbackIndex - 1, 0)
             check(instructions[callbackIndex - 1].opcode == Opcode.CONST_16 &&
                 (instructions[callbackIndex - 1] as? NarrowLiteralInstruction)?.narrowLiteral == GrokNames.LIBRARY_DOWNLOAD_DISCRIMINATOR) {
@@ -89,27 +89,27 @@ val libraryDownloadAllPatch = bytecodePatch(
             addInstructionsWithLabels(
                 buttonIndex + 1,
                 """
-                    sget-object v17, ${GrokNames.DOWNLOAD_ICON}
+                    sget-object v20, ${GrokNames.DOWNLOAD_ALL_ICON}
                     const v0, $downloadAllStringId
-                    invoke-static {v0, v5}, ${GrokNames.GET_STRING}
+                    invoke-static {v0, v6}, ${GrokNames.GET_STRING}
+                    move-result-object v17
+                    invoke-static {v4, v1}, ${GrokNames.BUTTON_MODIFIER}
                     move-result-object v19
-                    invoke-static {v3, v1}, ${GrokNames.BUTTON_MODIFIER}
-                    move-result-object v18
-                    invoke-virtual {v5, v9}, ${GrokNames.COMPOSER_CHANGED}
+                    invoke-virtual {v6, v10}, ${GrokNames.COMPOSER_CHANGED}
                     move-result v0
-                    invoke-virtual {v5}, ${GrokNames.COMPOSER_REMEMBERED}
-                    move-result-object v2
+                    invoke-virtual {v6}, ${GrokNames.COMPOSER_REMEMBERED}
+                    move-result-object v3
                     if-nez v0, :sd_all_a
-                    if-ne v2, v4, :sd_all_b
+                    if-ne v3, v5, :sd_all_b
                     :sd_all_a
-                    new-instance v2, ${GrokNames.LIBRARY_CLICK}
+                    new-instance v3, ${GrokNames.LIBRARY_CLICK}
                     const/16 v0, ${GrokNames.LIBRARY_DOWNLOAD_ALL_DISCRIMINATOR}
-                    invoke-direct {v2, v9, v0}, ${GrokNames.NEW_LIBRARY_CLICK}
-                    invoke-virtual {v5, v2}, ${GrokNames.COMPOSER_UPDATE}
+                    invoke-direct {v3, v10, v0}, ${GrokNames.NEW_LIBRARY_CLICK}
+                    invoke-virtual {v6, v3}, ${GrokNames.COMPOSER_UPDATE}
                     :sd_all_b
-                    move-object/from16 v20, v2
-                    check-cast v20, Lkotlin/jvm/functions/Function0;
-                    move-object/from16 v21, v5
+                    move-object/from16 v18, v3
+                    check-cast v18, Lkotlin/jvm/functions/Function0;
+                    move-object/from16 v21, v6
                     invoke-static/range {v16 .. v22}, ${GrokNames.DRAW_LIBRARY_BUTTON}
                 """,
             )
@@ -122,19 +122,19 @@ val libraryDownloadAllPatch = bytecodePatch(
             val resetIndex = indexOfReference(Opcode.IGET_OBJECT, GrokNames.LIBRARY_DOWNLOAD_PROCESSOR)
             requireRegisters(postIndex, 6, 6)
             requireRegisters(singleIndex, 6)
-            requireRegisters(resetIndex, 12, 1)
-            // v13 được ghi lại ngay sau processor; dùng tạm để truyền Context.
+            requireRegisters(resetIndex, 2, 1)
+            // v7 được ghi lại ngay sau processor; dùng tạm để truyền Context.
             check(implementation!!.instructions[resetIndex + 1].opcode == Opcode.IGET_OBJECT) {
-                "Lệnh ghi lại v13 sau processor không khớp smali gốc."
+                "Lệnh ghi lại v7 sau processor không khớp smali gốc."
             }
-            requireRegisters(resetIndex + 1, 13, 1)
+            requireRegisters(resetIndex + 1, 7, 1)
 
-            // Lấy đích :cond_2f từ if-eqz v14 ngay sau constructor Lu7/b1.
+            // Lấy đích :cond_2f từ if-eqz v8 ngay sau constructor Lw7/b1.
             val nextPostBranch = implementation!!.instructions[singleIndex + 3] as BuilderOffsetInstruction
             check(nextPostBranch.opcode == Opcode.IF_EQZ) {
                 "Nhánh chuyển sang bài tiếp theo không khớp smali gốc."
             }
-            requireRegisters(singleIndex + 3, 14)
+            requireRegisters(singleIndex + 3, 8)
             val nextPostIndex = nextPostBranch.target.location.index
 
             // Chèn từ cuối về đầu để các chỉ số chưa dùng không bị dịch chuyển.
@@ -142,38 +142,38 @@ val libraryDownloadAllPatch = bytecodePatch(
             addInstructionsAtControlFlowLabel(
                 resetIndex,
                 """
-                    const/4 v12, 0x0
-                    sput-boolean v12, $STATE_CLASS->all:Z
+                    const/4 v2, 0x0
+                    sput-boolean v2, $STATE_CLASS->all:Z
                 """,
             )
-            // Chèn trước khối xoá cờ vừa thêm: v4 là danh sách request đã gom,
-            // v12/v13 được ghi lại ngay sau đó; v1 giữ handler có Context công khai.
+            // Chèn trước khối xoá cờ vừa thêm: v3 là danh sách request đã gom,
+            // v2/v7 được ghi lại ngay sau đó; v1 giữ handler có Context công khai.
             // Không đụng vòng coroutine hoặc tăng số thanh ghi.
             addInstructionsAtControlFlowLabel(
                 resetIndex,
                 """
-                    sget-object v12, ${GrokNames.LIBRARY_DOWNLOAD_SINGLETON}
-                    if-ne v0, v12, :d2_library_notify_done
-                    sget-boolean v12, $STATE_CLASS->all:Z
-                    if-eqz v12, :d2_library_notify_done
-                    invoke-virtual {v4}, Ljava/util/ArrayList;->size()I
-                    move-result v12
-                    if-lez v12, :d2_library_notify_done
-                    iget-object v13, v1, $LIBRARY_CONTEXT
-                    invoke-static {v13, v12}, Lio/github/xxlc/extension/grok/Notify;->queued(Landroid/content/Context;I)V
+                    sget-object v2, ${GrokNames.LIBRARY_DOWNLOAD_SINGLETON}
+                    if-ne v0, v2, :d2_library_notify_done
+                    sget-boolean v2, $STATE_CLASS->all:Z
+                    if-eqz v2, :d2_library_notify_done
+                    invoke-virtual {v3}, Ljava/util/ArrayList;->size()I
+                    move-result v2
+                    if-lez v2, :d2_library_notify_done
+                    iget-object v7, v1, $LIBRARY_CONTEXT
+                    invoke-static {v7, v2}, Lio/github/xxlc/extension/grok/Notify;->queued(Landroid/content/Context;I)V
                     :d2_library_notify_done
                     nop
                 """,
             )
             // :cond_35 cũng là đích nhảy; vòng lặp phải chạy trước nhánh một media.
-            // v7, v8, v9 đã chết ở :cond_35; v12 còn sống (Ll7/s;) nên không ghi đè.
+            // v7, v10, v11 đã chết ở :cond_35; v8 (media), v9 và v12 còn sống nên không ghi đè.
             addInstructionsAtControlFlowLabel(
                 singleIndex,
                 """
                     check-cast v0, ${GrokNames.LIBRARY_SELECTION_EVENT}
                     iget-object v7, v0, ${GrokNames.SELECTION_ACTION}
-                    sget-object v8, ${GrokNames.LIBRARY_DOWNLOAD_SINGLETON}
-                    if-ne v7, v8, :single_b1
+                    sget-object v10, ${GrokNames.LIBRARY_DOWNLOAD_SINGLETON}
+                    if-ne v7, v10, :single_b1
                     sget-boolean v7, $STATE_CLASS->all:Z
                     if-eqz v7, :single_b1
                     invoke-virtual/range {v32 .. v32}, ${GrokNames.POST_MEDIA}
@@ -182,14 +182,14 @@ val libraryDownloadAllPatch = bytecodePatch(
                     move-result-object v7
                     :all_loop
                     invoke-interface {v7}, Ljava/util/Iterator;->hasNext()Z
-                    move-result v8
-                    if-eqz v8, :next_post
+                    move-result v10
+                    if-eqz v10, :next_post
                     invoke-interface {v7}, Ljava/util/Iterator;->next()Ljava/lang/Object;
-                    move-result-object v8
-                    check-cast v8, ${GrokNames.MEDIA}
-                    new-instance v9, ${GrokNames.LIBRARY_DOWNLOAD_REQUEST}
-                    invoke-direct {v9, v5, v8}, ${GrokNames.NEW_LIBRARY_DOWNLOAD_REQUEST}
-                    invoke-virtual {v4, v9}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
+                    move-result-object v10
+                    check-cast v10, ${GrokNames.MEDIA}
+                    new-instance v11, ${GrokNames.LIBRARY_DOWNLOAD_REQUEST}
+                    invoke-direct {v11, v4, v10}, ${GrokNames.NEW_LIBRARY_DOWNLOAD_REQUEST}
+                    invoke-virtual {v3, v11}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
                     goto :all_loop
                     :single_b1
                     nop

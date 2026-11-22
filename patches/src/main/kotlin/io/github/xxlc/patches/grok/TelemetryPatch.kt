@@ -62,7 +62,7 @@ private object CrashlyticsCollectionFingerprint : Fingerprint(
 @Suppress("unused")
 val disableTelemetryPatch = bytecodePatch(
     name = "Disable telemetry",
-    description = "Chặn sự kiện phân tích nội bộ, Mixpanel, Hightouch và ép tắt thu thập Crashlytics. Không bảo đảm chặn mọi kết nối theo dõi.",
+    description = "Block internal analytics events, Mixpanel and Hightouch payloads, and force Crashlytics collection off. Does not guarantee that every tracking connection is blocked.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)

@@ -12,8 +12,13 @@ public final class ClipboardHelper {
     private ClipboardHelper() {
     }
 
+    /** Cùng điều kiện với copyPrompt: menu chỉ hiện khi có chữ để sao chép. */
+    public static boolean canCopy(String prompt) {
+        return prompt != null && !prompt.trim().isEmpty();
+    }
+
     public static void copyPrompt(Context context, String prompt) {
-        if (context == null || prompt == null || prompt.trim().isEmpty()) {
+        if (context == null || !canCopy(prompt)) {
             return;
         }
         new Handler(Looper.getMainLooper()).post(() -> {

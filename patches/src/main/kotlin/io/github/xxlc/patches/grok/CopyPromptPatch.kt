@@ -7,7 +7,7 @@ import com.android.tools.smali.dexlib2.Opcode
 @Suppress("unused")
 val copyPromptPatch = bytecodePatch(
     name = "Copy prompt",
-    description = "Thêm mục sao chép prompt media hiện tại vào clipboard bằng icon sao chép; chỉ hiện khi media đã tạo xong (không che mục Thử lại khi tạo lỗi) và prompt không rỗng. Model 1.2.57 không có seed nên không sao chép seed. Chưa kiểm trên thiết bị.",
+    description = "Add a post menu item with the copy icon that copies the current media prompt. It appears only for finished, non-moderated media (so the Retry action stays visible for failed or moderated generations) and only when the prompt is not empty. The 1.2.59 model has no seed, so seeds are not copied. Not tested on a device.",
     default = true,
 ) {
     compatibleWith(grokCompatibility)

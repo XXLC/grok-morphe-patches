@@ -17,8 +17,7 @@ public final class DownloadNameHelper {
     }
 
     public static String renameMedia(String guessed, String mime) {
-        if (guessed == null || mime == null
-                || (!mime.startsWith("image/") && !mime.startsWith("video/"))) {
+        if (guessed == null || !DownloadFolderHelper.isMedia(mime, guessed)) {
             return guessed;
         }
         int dot = guessed.lastIndexOf('.');

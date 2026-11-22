@@ -11,6 +11,12 @@ public final class DownloadFolderHelper {
     private DownloadFolderHelper() {
     }
 
+    /** True khi MIME hoặc phần mở rộng cho thấy tệp là ảnh hoặc video. */
+    public static boolean isMedia(String mime, String fileName) {
+        String folder = resolveFolder(mime, fileName);
+        return FOLDER_PICTURES.equals(folder) || FOLDER_VIDEOS.equals(folder);
+    }
+
     public static String resolveFolder(String mime, String fileName) {
         try {
             if (mime != null) {
@@ -56,8 +62,17 @@ public final class DownloadFolderHelper {
     public static String resolveDownloadManagerSubPath(String mime, String fileName) {
         String folder = resolveFolder(mime, fileName);
         String subFolder = folder.startsWith("Download/") ? folder.substring("Download/".length()) : "Grok";
-        String safeName = (fileName == null || fileName.trim().isEmpty()) ? "DownloadedFile" : fileName;
-        return subFolder + "/" + safeName;
+        return subFolder + "/" + safeFileName(fileName);
+    }
+
+    /** Chỉ giữ tên tệp cuối cùng: bỏ dấu phân cách thư mục và các đoạn "." hoặc ".." để không thoát khỏi Download/Grok. */
+    static String safeFileName(String fileName) {
+        String name = fileName == null ? "" : fileName.replace('\\', '/');
+        name = name.substring(name.lastIndexOf('/') + 1).trim();
+        if (name.isEmpty() || ".".equals(name) || "..".equals(name)) {
+            return "DownloadedFile";
+        }
+        return name;
     }
 
     private static boolean isImageExtension(String ext) {
@@ -67,7 +82,12 @@ public final class DownloadFolderHelper {
                 || "webp".equals(ext)
                 || "gif".equals(ext)
                 || "heic".equals(ext)
-                || "heif".equals(ext);
+                || "heif".equals(ext)
+                || "avif".equals(ext)
+                || "bmp".equals(ext)
+                || "tif".equals(ext)
+                || "tiff".equals(ext)
+                || "jfif".equals(ext);
     }
 
     private static boolean isVideoExtension(String ext) {
@@ -75,6 +95,12 @@ public final class DownloadFolderHelper {
                 || "mov".equals(ext)
                 || "webm".equals(ext)
                 || "mkv".equals(ext)
-                || "3gp".equals(ext);
+                || "3gp".equals(ext)
+                || "avi".equals(ext)
+                || "m4v".equals(ext)
+                || "mpg".equals(ext)
+                || "mpeg".equals(ext)
+                || "ogv".equals(ext)
+                || "ts".equals(ext);
     }
 }

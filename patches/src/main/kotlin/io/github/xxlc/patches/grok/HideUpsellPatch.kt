@@ -51,7 +51,7 @@ private object SettingsUpsellEligibilityFingerprint : Fingerprint(
 @Suppress("unused")
 val hideUpgradePromptsPatch = bytecodePatch(
     name = "Hide upgrade prompts",
-    description = "Ẩn banner giới hạn Imagine và thẻ mời nâng cấp trong Cài đặt. Giữ dữ liệu hạn mức và quản lý thuê bao. Thay đổi Compose chưa kiểm trên thiết bị.",
+    description = "Hide the Imagine limit banner and the upgrade card in Settings, keeping usage data and subscription management. Compose changes are not tested on a device.",
     default = false,
 ) {
     compatibleWith(grokCompatibility)
@@ -62,14 +62,14 @@ val hideUpgradePromptsPatch = bytecodePatch(
         if (enabled != true) return@execute
 
         ImagineLimitBannerFingerprint.method.apply {
-            requireRegisterCount(56)
+            requireRegisterCount(49)
             val bannerIndex = indexOfReference(Opcode.IGET_OBJECT, GrokNames.IMAGINE_LIMIT_BANNER)
-            requireRegisters(bannerIndex, 10, 13)
-            // v10 chỉ chứa targetState; lambda trả Unit khi state null.
-            // Chèn ngay sau phép đọc, giữ mọi nhãn và dữ liệu trong v13.
-            addInstruction(bannerIndex + 1, "const/4 v10, 0x0")
+            requireRegisters(bannerIndex, 8, 11)
+            // v8 chỉ chứa targetState; lambda trả Unit khi state null.
+            // Chèn ngay sau phép đọc, giữ mọi nhãn và dữ liệu trong v11.
+            addInstruction(bannerIndex + 1, "const/4 v8, 0x0")
         }
-        SettingsUpsellTitleFingerprint.method.requireRegisterCount(16)
+        SettingsUpsellTitleFingerprint.method.requireRegisterCount(7)
         SettingsUpsellEligibilityFingerprint.method.apply {
             requireRegisterCount(25)
             val eligibleIndex = indexOfReference(Opcode.IGET_BOOLEAN, GrokNames.SETTINGS_UPGRADE_ELIGIBLE)
