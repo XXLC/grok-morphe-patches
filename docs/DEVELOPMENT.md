@@ -2,7 +2,7 @@
 
 ## Architecture and patch targets
 
-The twelve public bytecode patches share the app target
+The thirteen public bytecode patches share the app target
 in [Compatibility.kt](../patches/src/main/kotlin/io/github/xxlc/patches/grok/Compatibility.kt):
 `ai.x.grok` **1.2.59-release.00**, versionCode **11259200**, with `.apkm` input.
 Sources are in [patches/grok](../patches/src/main/kotlin/io/github/xxlc/patches/grok).

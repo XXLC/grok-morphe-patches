@@ -44,10 +44,10 @@ prepared for download, not completed downloads.
 
 - Grok 1.2.59-release.00 has not been tested on a device. Names, registers and
   branch targets were re-derived from the decoded 1.2.59 smali. The
-  `v1.2.0-dev.1` bundle builds in CI and Morphe Desktop CLI v1.20.0
-  (`--validate`, full bytecode mode) applied all 12 patches to the 1.2.59 APK.
+  `v1.2.0-dev.2` bundle builds in CI and Morphe Desktop CLI v1.20.0
+  (`--validate`, full bytecode mode) applied all 13 patches to the 1.2.59 APK.
   The patched APK decodes, and a smali comparison with the original shows only
-  the 28 intended methods changed, with unchanged register counts. Android's
+  the 30 intended methods changed, with unchanged register counts. Android's
   bytecode verifier and device behavior have not been exercised.
 - The previous stable release `v1.1.0` supports Grok 1.2.57-release.01.
 
