@@ -1,3 +1,9 @@
+## [1.2.0-dev.2](https://github.com/XXLC/grok-morphe-patches/compare/v1.2.0-dev.1...v1.2.0-dev.2) (2026-11-22)
+
+### ✨ New Features
+
+* add Team/Org lock patch, fix icons and moderated Copy prompt, English descriptions ([118f2b0](https://github.com/XXLC/grok-morphe-patches/commit/118f2b0bdc4897e0111f00691dc669b1c7b33864))
+
 ## [1.2.0-dev.1](https://github.com/XXLC/grok-morphe-patches/compare/v1.1.0...v1.2.0-dev.1) (2026-11-22)
 
 ### ✨ New Features
