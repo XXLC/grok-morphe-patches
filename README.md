@@ -40,8 +40,14 @@ prepared for download, not completed downloads.
 
 ## Verification
 
-- Grok 1.2.57-release.01 has not been tested on a device. Static source checks
-  have been performed; a CI build and validation of the patched bytecode are pending.
+- Grok 1.2.57-release.01 has not been tested on a device. The `v1.1.0-dev.2`
+  bundle builds in CI and patched the APK with Morphe Desktop CLI v1.20.0
+  (`--validate`, full bytecode mode). A static comparison of the patched DEX
+  against the original found only the intended method changes, valid branch
+  targets, unchanged register counts and a valid v2 signature.
+- Morphe's resource rebuild removed the literal quotes around the default string
+  `grok_voice_therapist_title`; this is outside these patches and only affects a
+  label.
 
 ## Known limitations
 
