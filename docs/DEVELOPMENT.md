@@ -153,8 +153,9 @@ or introducing additional state.
 ### Video quality, file organization and post actions
 
 The following additions were written for 1.2.57 and re-mapped to 1.2.59. The 1.2.59
-bundle is built by CI, applied to the APK with Morphe Desktop CLI and confirmed
-on a device by the maintainer. The table shows whether each public patch is
+bundle is built by CI, applied to the APK with Morphe Desktop CLI and was
+reported working by the maintainer on a device; per-patch coverage was not
+recorded (see the README verification section). The table shows whether each public patch is
 selected by default; every `enabledOption` defaults to true.
 Resource and flag dependencies may still run when a selected public patch has its
 option disabled.
