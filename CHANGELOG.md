@@ -1,3 +1,9 @@
+## [1.2.2](https://github.com/XXLC/grok-morphe-patches/compare/v1.2.1...v1.2.2) (2026-11-23)
+
+### 🐛 Bug Fixes
+
+* keep media extension when the guessed name has a literal ? or # ([b91990b](https://github.com/XXLC/grok-morphe-patches/commit/b91990bb0dae589af4f86490e3309ece60db4d81))
+
 ## [1.2.2-dev.1](https://github.com/XXLC/grok-morphe-patches/compare/v1.2.1...v1.2.2-dev.1) (2026-11-23)
 
 ### 🐛 Bug Fixes
