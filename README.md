@@ -56,6 +56,7 @@ prepared for download, not completed downloads.
 ## Known limitations
 
 - Per-patch device coverage of the new patches and the 1.2.59 changes is unknown; only the overall bundle was reported working.
+- Library Download all passes its mode to the selection handler through one process-wide flag (`DownloadAllState.all`). Two library download actions that overlap in time can read each other's mode; carrying the mode per operation would mean threading state through obfuscated callbacks.
 - Selecting Copy prompt or Download all (post) runs the unnamed
   `PostActionFlagsPatch.kt` dependency. It changes equality comparisons for the
   app's Download actions to include the two injected action flags, even when
